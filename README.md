@@ -49,6 +49,8 @@ Here is a list of some suggestions, requested by our customers:
 ### UX/CLI:
 - ``help`` command - to show help with available commands and its description with examples
 - Better UX - for example, sometimes if we provide invalid command, there is no error message
+  - Better error handling, right now, the whole game fails if there is an exception
+  - Better error messages
 - Allow `debug` only if the application is started with `--devel` command line option
 - Add ability to set `seed`, number of `rows`, `cols` and `mines` by command line options
 
