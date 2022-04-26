@@ -28,10 +28,29 @@ public final class Board {
         if (rows < 3 || cols < 3 || rows > 99 || cols > 99 || mines < 1)
             throw new IllegalArgumentException("Error");
 
-
         this.rows = rows;
         this.cols = cols;
         this.mines = mines;
+    }
+
+    Board(int rows, int cols, Collection<BoardCell> cells) {
+        if (rows * cols != cells.size())
+            throw new IllegalArgumentException("Oops something went wrong");
+
+        this.rows = rows;
+        this.cols = cols;
+        this.mines = (int) cells.stream().filter(c -> c.value == 'M').count();
+        this.cells = new ArrayList<>(cells);
+
+        // calculate numbers
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                char adjMinesChar = this.getAdjMinesCount(r, c);
+                if (adjMinesChar != 'M') {
+                    this.getCell(r, c).value = adjMinesChar;
+                }
+            }
+        }
     }
 
     public static Board importBoard(String base64content) {
@@ -40,30 +59,19 @@ public final class Board {
         var rowColsStr = content[0].split(",");
         int rows = Integer.parseInt(rowColsStr[0]), cols = Integer.parseInt(rowColsStr[1]);
 
-        var board = new Board(rows, cols, content.length - 1);
-        board.cells = new ArrayList<BoardCell>(rows * cols);
+        List<BoardCell> cells = new ArrayList<>(rows * cols);
 
         for (int i = 0; i < rows * cols; i++) {
-            board.cells.add(new BoardCell());
+            cells.add(new BoardCell());
         }
 
         for (int i = 1; i < content.length; i++) {
             var rowColStr = content[i].split(",");
             int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
-            board.getCell(row, col).value = 'M';
+            cells.get(row * cols + col).value = 'M';
         }
 
-        // calculate numbers
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                char adjMinesChar = board.getAdjMinesCount(r, c);
-                if (adjMinesChar != 'M') {
-                    board.getCell(r, c).value = adjMinesChar;
-                }
-            }
-        }
-
-        return board;
+        return new Board(rows, cols, cells);
     }
 
     public BoardCell getCell(int r, int c) {
@@ -98,7 +106,6 @@ public final class Board {
 
         return true;
     }
-
 
     public void print(PrintStream out) {
         out.print("   ");
