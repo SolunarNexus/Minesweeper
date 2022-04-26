@@ -16,14 +16,6 @@ final class BoardTest {
 
         assertBoard(board, 3, 3, 3);
 
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                assertThat(board.getCell(0, 1).isRevealed)
-                        .as("Cell at [%d, %d] should not be revealed", row, col)
-                        .isFalse();
-            }
-        }
-
         assertCell(board, 0, 0, 'M');
         assertCell(board, 0, 1, '2');
         assertCell(board, 0, 2, 'M');
@@ -50,5 +42,8 @@ final class BoardTest {
 
     private void assertCell(Board board, int row, int column, char value) {
         assertThat(board.getCell(row, column).value).isEqualTo(value);
+        assertThat(board.getCell(row, column).isRevealed)
+                .as("Cell at [%d, %d] should not be revealed", row, column)
+                .isFalse();
     }
 }
