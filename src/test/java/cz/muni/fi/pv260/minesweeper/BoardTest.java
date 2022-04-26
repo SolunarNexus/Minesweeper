@@ -32,6 +32,54 @@ final class BoardTest {
         }
     }
 
+    @Test
+    void loadLargerBoard() {
+        var board = TestUtils.loadFromString("""
+                MMMMMMM
+                MXMXMXM
+                MMMXMXX
+                MXXMXXX
+                """);
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.assertRows(4);
+            softly.assertColumns(7);
+            softly.assertMines(17);
+
+            softly.assertCell(0, 0, 'M');
+            softly.assertCell(0, 1, 'M');
+            softly.assertCell(0, 2, 'M');
+            softly.assertCell(0, 3, 'M');
+            softly.assertCell(0, 4, 'M');
+            softly.assertCell(0, 5, 'M');
+            softly.assertCell(0, 6, 'M');
+
+            softly.assertCell(1, 0, 'M');
+            softly.assertCell(1, 1, '8');
+            softly.assertCell(1, 2, 'M');
+            softly.assertCell(1, 3, '7');
+            softly.assertCell(1, 4, 'M');
+            softly.assertCell(1, 5, '6');
+            softly.assertCell(1, 6, 'M');
+
+            softly.assertCell(2, 0, 'M');
+            softly.assertCell(2, 1, 'M');
+            softly.assertCell(2, 2, 'M');
+            softly.assertCell(2, 3, '5');
+            softly.assertCell(2, 4, 'M');
+            softly.assertCell(2, 5, '3');
+            softly.assertCell(2, 6, '1');
+
+            softly.assertCell(3, 0, 'M');
+            softly.assertCell(3, 1, '4');
+            softly.assertCell(3, 2, '3');
+            softly.assertCell(3, 3, 'M');
+            softly.assertCell(3, 4, '2');
+            softly.assertCell(3, 5, '1');
+            softly.assertCell(3, 6, '0');
+        }
+    }
+
     private static class BoardSoftAssertions extends AutoCloseableSoftAssertions {
 
         private final Board board;
