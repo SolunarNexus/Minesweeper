@@ -75,7 +75,7 @@ public final class Minesweeper {
     }
 
     private static void doPrintBoard() {
-        board.print();
+        board.print(System.out);
     }
 
     private static boolean doReveal(int fst, int snd) {

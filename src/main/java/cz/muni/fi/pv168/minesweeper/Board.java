@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.minesweeper;
 
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -103,25 +104,25 @@ public final class Board {
     }
 
 
-    public void print() {
-        System.out.printf("   ");
+    public void print(PrintStream out) {
+        out.printf("   ");
         for (int c = 0; c < cols; c++) {
-            System.out.printf("%02d ", c);
+            out.printf("%02d ", c);
         }
-        System.out.println("");
+        out.println("");
         for (int r = 0; r < rows; r++) {
-            System.out.printf("%02d ", r);
+            out.printf("%02d ", r);
             for (int c = 0; c < cols; c++) {
                 if (cells != null) {
                     var cell = getCell(r, c);
                     if (cell.isRevealed) {
-                        System.out.printf(" %c ", cell.value);
+                        out.printf(" %c ", cell.value);
                         continue;
                     }
                 }
-                System.out.print(" X ");
+                out.print(" X ");
             }
-            System.out.println("");
+            out.println("");
         }
     }
 
