@@ -24,17 +24,17 @@ final class BoardTest {
             }
         }
 
-        assertThat(board.getCell(0, 0).value).isEqualTo('M');
-        assertThat(board.getCell(0, 1).value).isEqualTo('2');
-        assertThat(board.getCell(0, 2).value).isEqualTo('M');
+        assertCell(board, 0, 0, 'M');
+        assertCell(board, 0, 1, '2');
+        assertCell(board, 0, 2, 'M');
 
-        assertThat(board.getCell(1, 0).value).isEqualTo('1');
-        assertThat(board.getCell(1, 1).value).isEqualTo('3');
-        assertThat(board.getCell(1, 2).value).isEqualTo('2');
+        assertCell(board, 1, 0, '1');
+        assertCell(board, 1, 1, '3');
+        assertCell(board, 1, 2, '2');
 
-        assertThat(board.getCell(2, 0).value).isEqualTo('0');
-        assertThat(board.getCell(2, 1).value).isEqualTo('1');
-        assertThat(board.getCell(2, 2).value).isEqualTo('M');
+        assertCell(board, 2, 0, '0');
+        assertCell(board, 2, 1, '1');
+        assertCell(board, 2, 2, 'M');
     }
 
     private void assertBoard(Board board, int expectedColumns, int expectedRows, int expectedMines) {
@@ -46,5 +46,9 @@ final class BoardTest {
 
         assertThat(board.mines)
                 .isEqualTo(expectedMines);
+    }
+
+    private void assertCell(Board board, int row, int column, char value) {
+        assertThat(board.getCell(row, column).value).isEqualTo(value);
     }
 }
