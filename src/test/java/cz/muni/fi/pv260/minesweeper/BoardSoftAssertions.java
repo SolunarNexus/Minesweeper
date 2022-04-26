@@ -9,6 +9,13 @@ final class BoardSoftAssertions extends AutoCloseableSoftAssertions {
 
     private final Board board;
 
+    /**
+     * Initializes the board from a condensed string representation.
+     *
+     * @param boardAsString condensed string representation of the board
+     *
+     * @see #loadFromString(String)
+     */
     BoardSoftAssertions(String boardAsString) {
         this(loadFromString(boardAsString));
     }
@@ -18,28 +25,37 @@ final class BoardSoftAssertions extends AutoCloseableSoftAssertions {
     }
 
     /**
-     * Loads a board from provided string
-     * each line represents a row, each char in row represents a column
-     * <p>
-     * Possible chars for cols:
-     * - 'M' - represents a mine
-     * - '.' - represents a cell that is revealed (and it is not a mine)
-     * - 'X' - represents an unrevealed mine
-     * FUTURE:
-     * - 'F' - represents a correct flag on the cell, cell is flagged and it is mine
-     * - 'W` - wrong flag - the flagged cell is not a mine!
+     * Loads and initializes the board from a condensed string representation.
      *
-     * @param raw board representation
-     * @return initialized board
+     * <p>Each line in the provided condensed string represents a row,
+     * each character in each row represents a cell.
+     * All the lines in the string must be of the same length!
+     *
+     * <p>The number of mines in the board is determined automatically
+     * and the values of all the empty cells are calculated based on
+     * the number of mines in adjacent cells.
+     *
+     * <p>Possible characters for cell representation:
+     * <ul>
+     *   <li>{@code 'M'} - represents a mine (naturally unrevealed)
+     *   <li>{@code 'X'} - represents an empty cell (not revealed yet)
+     *   <li>{@code '.'} - represents an empty revealed cell
+     * </ul>
+     *
+     * @param boardAsString condensed string representation of the board
+     *
+     * @return loaded and initialized board
+     *
+     * @throws IllegalArgumentException if the string is not formatted properly
      */
-    static Board loadFromString(String raw) {
-        var lines = raw.split("\n");
-        var rows = lines.length;
-        var cols = lines[0].trim().length();
+    static Board loadFromString(String boardAsString) {
+        String[] lines = boardAsString.split("\n");
+        int rows = lines.length;
+        int cols = lines[0].trim().length();
 
         List<BoardCell> cells = new ArrayList<>(rows * cols);
 
-        for (var line : lines) {
+        for (String line : lines) {
             for (char ch : line.toUpperCase().toCharArray()) {
                 var cell = new BoardCell();
                 cells.add(cell);
@@ -48,7 +64,6 @@ final class BoardSoftAssertions extends AutoCloseableSoftAssertions {
                     case 'M' -> cell.value = 'M';
                     case '.' -> cell.isRevealed = true;
                     case 'X' -> cell.isRevealed = false;
-                    case 'W', 'F' -> throw new UnsupportedOperationException("Not implemented yet");
                     default -> throw new IllegalArgumentException("Unsupported character: " + ch);
                 }
             }
