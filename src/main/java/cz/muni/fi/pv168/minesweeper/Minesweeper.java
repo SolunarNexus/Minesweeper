@@ -87,7 +87,6 @@ public final class Minesweeper {
     private static void doDebug(Board board) {
         System.out.println("Debug output: \n");
         System.out.println(board.toString());
-        System.out.println("");
     }
 
     private static void doExit() {
