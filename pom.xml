@@ -16,25 +16,14 @@
         <version.assertj>3.22.0</version.assertj>
         <version.mockito>4.4.0</version.mockito>
         <version.mockito-jupiter>4.4.0</version.mockito-jupiter>
-        <version.findbugs>3.0.2</version.findbugs>
+        <version.jsr305>3.0.2</version.jsr305>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>${version.findbugs}</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${version.mockito-jupiter}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -48,6 +37,17 @@
             <artifactId>mockito-core</artifactId>
             <version>${version.mockito}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${version.mockito-jupiter}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${version.jsr305}</version>
         </dependency>
     </dependencies>
 
