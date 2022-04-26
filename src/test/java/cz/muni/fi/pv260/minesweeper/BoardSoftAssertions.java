@@ -1,13 +1,14 @@
 package cz.muni.fi.pv260.minesweeper;
 
-import org.assertj.core.api.AutoCloseableSoftAssertions;
+import org.assertj.core.api.SoftAssertions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-final class BoardSoftAssertions extends AutoCloseableSoftAssertions {
+final class BoardSoftAssertions implements AutoCloseable {
 
     private final Board board;
+    private final SoftAssertions softly = new SoftAssertions();
 
     /**
      * Initializes the board from a condensed string representation.
@@ -73,19 +74,19 @@ final class BoardSoftAssertions extends AutoCloseableSoftAssertions {
     }
 
     void assertRows(int expectedRows) {
-        assertThat(board.rows)
+        softly.assertThat(board.rows)
                 .as("Board rows")
                 .isEqualTo(expectedRows);
     }
 
     void assertColumns(int expectedColumns) {
-        assertThat(board.cols)
+        softly.assertThat(board.cols)
                 .as("Board columns")
                 .isEqualTo(expectedColumns);
     }
 
     void assertMines(int expectedMines) {
-        assertThat(board.mines)
+        softly.assertThat(board.mines)
                 .as("Mines in the board")
                 .isEqualTo(expectedMines);
     }
@@ -97,11 +98,16 @@ final class BoardSoftAssertions extends AutoCloseableSoftAssertions {
     }
 
     void assertCell(int row, int column, char expectedValue) {
-        assertThat(board.getCell(row, column).value)
+        softly.assertThat(board.getCell(row, column).value)
                 .as("Cell value at [%d, %d]", row, column)
                 .isEqualTo(expectedValue);
-        assertThat(board.getCell(row, column).isRevealed)
+        softly.assertThat(board.getCell(row, column).isRevealed)
                 .as("Cell at [%d, %d] should not be revealed", row, column)
                 .isFalse();
+    }
+
+    @Override
+    public void close() {
+        softly.assertAll();
     }
 }
