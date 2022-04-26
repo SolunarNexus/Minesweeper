@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.minesweeper;
+package cz.muni.fi.pv260.minesweeper;
 
 class BoardCell {
     public char value = ' ';
