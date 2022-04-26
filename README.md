@@ -103,6 +103,14 @@ which indicates how many adjacent squares contain mines;
 if no mines are adjacent, the square becomes blank, 
 and all adjacent squares will be recursively revealed. 
 The algorithm ends when the adj. cell is a mine.
+For the implementation, you can use either recursion, or queue or stack.
+
+In simple terms:
+You will start with the current cell, reveal it, if it is mine end - you revealed the mine.
+If there is any neighbour that is mine - stop with the revealing. Otherwise, add all other
+adjacent cells that are not revealed to the stack and then continue 
+(Recursively call yourself on the neighbours).
+
 
 ### Flag implementation
 
