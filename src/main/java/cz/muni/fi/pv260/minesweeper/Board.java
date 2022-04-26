@@ -2,11 +2,16 @@ package cz.muni.fi.pv260.minesweeper;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 import java.util.random.RandomGenerator;
 
 public final class Board {
-    static final int[][] DIRECTIONS = new int[][]{
+
+    private static final int[][] DIRECTIONS = new int[][]{
             {0, 1},
             {1, 0},
             {1, 1},
@@ -128,7 +133,6 @@ public final class Board {
             out.println("");
         }
     }
-
 
     public String exportBoard() {
         checkTooSoon();

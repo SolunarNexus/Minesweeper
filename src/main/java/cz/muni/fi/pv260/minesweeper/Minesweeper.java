@@ -2,8 +2,8 @@ package cz.muni.fi.pv260.minesweeper;
 
 import java.util.Scanner;
 
-
 public final class Minesweeper {
+
     public static final String LOGO = """
             ███╗░░░███╗██╗███╗░░██╗███████╗░██████╗░██╗░░░░░░░██╗███████╗███████╗██████╗░███████╗██████╗░
             ████╗░████║██║████╗░██║██╔════╝██╔════╝░██║░░██╗░░██║██╔════╝██╔════╝██╔══██╗██╔════╝██╔══██╗
