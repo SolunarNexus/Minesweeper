@@ -60,7 +60,7 @@ final class BoardTest {
     }
 
     @Test
-    void loadLargerBoard() {
+    void loadBoardWithAllPossibleCellValues() {
         String board = """
                 MMMMMMM
                 MXMXMXM
