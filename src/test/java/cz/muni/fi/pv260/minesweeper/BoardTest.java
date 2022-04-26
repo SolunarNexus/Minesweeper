@@ -1,6 +1,5 @@
 package cz.muni.fi.pv260.minesweeper;
 
-
 import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
@@ -8,6 +7,7 @@ import java.text.ParseException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 final class BoardTest {
+
     @Test
     void loadSimpleBoard() throws ParseException {
         var board = TestUtils.loadFromString("""

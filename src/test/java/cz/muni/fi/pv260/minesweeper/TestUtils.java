@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class TestUtils {
+
     private TestUtils() {
+        throw new AssertionError();
     }
 
     /**
