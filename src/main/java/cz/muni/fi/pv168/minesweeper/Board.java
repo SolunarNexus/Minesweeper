@@ -2,10 +2,7 @@ package cz.muni.fi.pv168.minesweeper;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.random.RandomGenerator;
 
 public final class Board {
@@ -36,7 +33,6 @@ public final class Board {
         this.cols = cols;
         this.mines = mines;
     }
-
 
     public static Board importBoard(String base64content) {
         var content = new String(Base64.getDecoder().decode(base64content), StandardCharsets.UTF_8)
@@ -105,7 +101,7 @@ public final class Board {
 
 
     public void print(PrintStream out) {
-        out.printf("   ");
+        out.print("   ");
         for (int c = 0; c < cols; c++) {
             out.printf("%02d ", c);
         }

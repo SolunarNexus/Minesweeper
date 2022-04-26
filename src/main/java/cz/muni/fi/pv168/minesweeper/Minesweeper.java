@@ -49,9 +49,9 @@ public final class Minesweeper {
             } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
                 if (!doReveal(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))) {
                     handle_MINE(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
-                    if (board.isCleared()) {
-                        doWon();
-                    }
+                }
+                if (board.isCleared()) {
+                    doWon();
                 }
             } else {
                 handle_ERROR("Invalid command: " + inputLine);
