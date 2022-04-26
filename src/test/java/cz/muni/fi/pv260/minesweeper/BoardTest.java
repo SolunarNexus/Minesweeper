@@ -32,6 +32,34 @@ final class BoardTest {
     }
 
     @Test
+    void loadSimpleClearedBoard() {
+        String board = """
+                MM.
+                ..M
+                ..M
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.assertRows(3);
+            softly.assertColumns(3);
+            softly.assertMines(4);
+            softly.assertCleared(true);
+
+            softly.assertCell(0, 0, 'M');
+            softly.assertCell(0, 1, 'M');
+            softly.assertRevealedCell(0, 2, '2');
+
+            softly.assertRevealedCell(1, 0, '2');
+            softly.assertRevealedCell(1, 1, '4');
+            softly.assertCell(1, 2, 'M');
+
+            softly.assertRevealedCell(2, 0, '0');
+            softly.assertRevealedCell(2, 1, '2');
+            softly.assertCell(2, 2, 'M');
+        }
+    }
+
+    @Test
     void loadLargerBoard() {
         String board = """
                 MMMMMMM
