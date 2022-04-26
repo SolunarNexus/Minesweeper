@@ -1,6 +1,5 @@
 package cz.muni.fi.pv260.minesweeper;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +24,12 @@ final class TestUtils {
      * @param raw board representation
      * @return initialized board
      */
-    static Board loadFromString(String raw) throws ParseException {
+    static Board loadFromString(String raw) {
         var lines = raw.split("\n");
         var rows = lines.length;
         var cols = lines[0].trim().length();
 
         List<BoardCell> cells = new ArrayList<>(rows * cols);
-        int i = 0;
 
         for (var line : lines) {
             for (char ch : line.toUpperCase().toCharArray()) {
@@ -43,10 +41,8 @@ final class TestUtils {
                     case '.' -> cell.isRevealed = true;
                     case 'X' -> cell.isRevealed = false;
                     case 'W', 'F' -> throw new UnsupportedOperationException("Not implemented yet");
-                    default -> throw new ParseException("Unsupported character: " + ch, i);
+                    default -> throw new IllegalArgumentException("Unsupported character: " + ch);
                 }
-
-                i++;
             }
         }
 
