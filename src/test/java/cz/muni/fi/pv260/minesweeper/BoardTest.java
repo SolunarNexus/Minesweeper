@@ -14,14 +14,7 @@ final class BoardTest {
                 XXM
                 """);
 
-        assertThat(board.rows)
-                .isEqualTo(3);
-
-        assertThat(board.cols)
-                .isEqualTo(3);
-
-        assertThat(board.mines)
-                .isEqualTo(3);
+        assertBoard(board, 3, 3, 3);
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
@@ -42,5 +35,16 @@ final class BoardTest {
         assertThat(board.getCell(2, 0).value).isEqualTo('0');
         assertThat(board.getCell(2, 1).value).isEqualTo('1');
         assertThat(board.getCell(2, 2).value).isEqualTo('M');
+    }
+
+    private void assertBoard(Board board, int expectedColumns, int expectedRows, int expectedMines) {
+        assertThat(board.rows)
+                .isEqualTo(expectedRows);
+
+        assertThat(board.cols)
+                .isEqualTo(expectedColumns);
+
+        assertThat(board.mines)
+                .isEqualTo(expectedMines);
     }
 }
