@@ -1,6 +1,5 @@
 package cz.muni.fi.pv260.minesweeper;
 
-import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Test;
 
 final class BoardTest {
@@ -50,52 +49,6 @@ final class BoardTest {
             softly.assertRow(1, 'M', '8', 'M', '7', 'M', '6', 'M');
             softly.assertRow(2, 'M', 'M', 'M', '5', 'M', '3', '1');
             softly.assertRow(3, 'M', '4', '3', 'M', '2', '1', '0');
-        }
-    }
-
-    private static class BoardSoftAssertions extends AutoCloseableSoftAssertions {
-
-        private final Board board;
-
-        private BoardSoftAssertions(String boardAsString) {
-            this(TestUtils.loadFromString(boardAsString));
-        }
-
-        private BoardSoftAssertions(Board board) {
-            this.board = board;
-        }
-
-        private void assertRows(int expectedRows) {
-            assertThat(board.rows)
-                    .as("Board rows")
-                    .isEqualTo(expectedRows);
-        }
-
-        private void assertColumns(int expectedColumns) {
-            assertThat(board.cols)
-                    .as("Board columns")
-                    .isEqualTo(expectedColumns);
-        }
-
-        private void assertMines(int expectedMines) {
-            assertThat(board.mines)
-                    .as("Mines in the board")
-                    .isEqualTo(expectedMines);
-        }
-
-        private void assertRow(int row, char... expectedValues) {
-            for (int column = 0; column < expectedValues.length; column++) {
-                assertCell(row, column, expectedValues[column]);
-            }
-        }
-
-        private void assertCell(int row, int column, char expectedValue) {
-            assertThat(board.getCell(row, column).value)
-                    .as("Cell value at [%d, %d]", row, column)
-                    .isEqualTo(expectedValue);
-            assertThat(board.getCell(row, column).isRevealed)
-                    .as("Cell at [%d, %d] should not be revealed", row, column)
-                    .isFalse();
         }
     }
 }
