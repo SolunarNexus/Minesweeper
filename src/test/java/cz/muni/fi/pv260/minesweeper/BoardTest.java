@@ -7,11 +7,11 @@ final class BoardTest {
 
     @Test
     void loadSimpleBoard() {
-        var board = TestUtils.loadFromString("""
+        String board = """
                 MXM
                 XXX
                 XXM
-                """);
+                """;
 
         try (var softly = new BoardSoftAssertions(board)) {
             softly.assertRows(3);
@@ -34,12 +34,12 @@ final class BoardTest {
 
     @Test
     void loadLargerBoard() {
-        var board = TestUtils.loadFromString("""
+        String board = """
                 MMMMMMM
                 MXMXMXM
                 MMMXMXX
                 MXXMXXX
-                """);
+                """;
 
         try (var softly = new BoardSoftAssertions(board)) {
             softly.assertRows(4);
@@ -56,6 +56,10 @@ final class BoardTest {
     private static class BoardSoftAssertions extends AutoCloseableSoftAssertions {
 
         private final Board board;
+
+        private BoardSoftAssertions(String boardAsString) {
+            this(TestUtils.loadFromString(boardAsString));
+        }
 
         private BoardSoftAssertions(Board board) {
             this.board = board;
