@@ -26,39 +26,39 @@ When you start the game, you are greeted with logo, the board is printed out and
 ```
 
 Available commands:
-- `reveal` or `r` - for the board revealing, it expects 2 additional numeric arguments, `reveal <row> <col>`
-- `debug` or `d` - to print debug output (it reveals where are the mines, it should be used for devel. purposes)
+- `reveal` or `r` - reveals the board, it expects 2 additional numeric arguments, `reveal <row> <col>`
+- `debug` or `d` - prints debug output (it reveals where are the mines, it should be used for development purposes)
 - `exit` or `quit` - to leave a game
-- `export` - to export the game in base64 format
-- `import` - to import the game in the same base64 format (example: `import NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK`)
+- `export` - exports the game in base64 format
+- `import` - imports the game in the same base64 format (example: `import NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK`)
 
 
-Now for the game play: we wanted to have always-safe the first turn (reveal), so the board is generated after the first
-reveal and before that, the board is empty and not initialized.
+Now for the game play: we want the first turn (reveal) to always be safe, so the board is generated after the first
+reveal. Before that, the board is empty and not initialized.
 
-If the player reveals a cell with a mine, it will explode and player will lose. 
+If the player reveals a cell with a mine, it will explode and the player will lose. 
 After all cells that are not mines are cleared, the player won the game.
 
 
-## Additional work
+## Further improvements
 
-Since our game is ultra popular, the customers wants it to be better.
+Since our game is very popular, the customers want it to be better.
 
-Here is a list of some suggestions, requested by our customers:
+Here is a list of requests from our customers:
 
 ### UX/CLI:
-- ``help`` command - to show help with available commands and its description with examples
-- Better UX - for example, sometimes if we provide invalid command, there is no error message
-  - Better error handling, right now, the whole game fails if there is an exception
+- ``help`` command - shows a message with available commands and their descriptions with examples
+- Better UX (upser experience) - for example, sometimes if we provide invalid command, there is no error message
+  - Better error handling - right now, the whole game fails if there is an exception
   - Better error messages
-  - Import should prompt user, whether he wants to replace the current board (if it was already initialized)
+  - `import` should prompt user whether he wants to replace the current board (if it was already initialized)
 - Allow `debug` only if the application is started with `--devel` command line option
 - Add ability to set `seed`, number of `rows`, `cols` and `mines` by command line options
 
 ### Gameplay:
-- Implement floodfill reveal - currently, we are revealing only the single cell (desc. see bellow).
-- **We need flags** - add ability to flag cells. If the cell is flagged, it cannot be revealed
-- Export and import with support of flags, we would like to be able to export and import game with flags,
+- Implement floodfill reveal - currently, we are revealing only one cell (description see below).
+- **We need flags** - add ability to flag cells. If a cell is flagged, it cannot be revealed
+- Export and import shoud support flags and saving of board state, we would like to be able to export and import a game with flags,
 but also we would like to have stored, which cells were already revealed. 
 **IMPORTANT**: the old format has to work for the new version, since our customer wants to play
 their stored games on the new version!
@@ -96,30 +96,34 @@ their stored games on the new version!
 Here are some additional details about some features
 
 
-### Flood-Fill implementation
+### Flood-fill implementation
 
-When the player is revealing the cell, it can be either mine, or it can be digit, 
-which indicates how many adjacent squares contain mines; 
-if no mines are adjacent, the square becomes blank, 
+When the player is revealing a cell, it can be either a mine, or it can be a digit, 
+which indicates how many adjacent squares contain mines.
+If no mines are adjacent, the square becomes blank, 
 and all adjacent squares will be recursively revealed. 
-The algorithm ends when the adj. cell is a mine.
+The algorithm ends when the adjacent cell is a mine.
 For the implementation, you can use either recursion, or queue or stack.
 
 In simple terms:
-You will start with the current cell, reveal it, if it is mine end - you revealed the mine.
-If there is any neighbour that is mine - stop with the revealing. Otherwise, add all other
+You will start with the current cell, reveal it, if it is a mine end - you revealed the mine.
+If not and there is any neighbour that is mine - stop with the revealing. Otherwise, add all other
 adjacent cells that are not revealed to the stack and then continue 
-(Recursively call yourself on the neighbours).
+(Recursively call on the neighbours).
 
 
 ### Flag implementation
 
-When the player flags a cell it cannot be revealed, the number of flags is infinite (it can be negative).
-In order to flag a mine there should be a command that toggles a flag on the cell.
-The number of flags should be displayed after each valid turn.
+When the player flags a cell it cannot be revealed. You can place as many flags as you want. 
+There should be a command that toggles a flag on the cell.
+After each valid turn, the game updates the indicator of how many mines remain unflagged - however, 
+this number is only the difference between the number of mines in the game and the number of already placed flags, 
+it does not tell the player if a cell with a flag contains a mine.
+The number of flags should be displayed after each valid turn. 
+The game shows the difference between the number of placed flags and the number of mines. This number can be negative.
 
-**IMPORTANT**: Flood-Fill reveals also the wrong flags which, so if the cell is wrongly flagged, it should
-be revealed.
+
+**IMPORTANT**: Flood-fill also removes wrongly-placed flags. If a flagged cell is checked during flood-filling and does not contain a mine, it should be revealed and the flag should be removed.
 
 
 [1]: https://en.wikipedia.org/wiki/Minesweeper_(video_game)
