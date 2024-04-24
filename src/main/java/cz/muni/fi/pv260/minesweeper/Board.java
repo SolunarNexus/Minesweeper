@@ -94,7 +94,24 @@ public final class Board {
         BoardCell cell = getCell(row, col);
         cell.isRevealed = true;
 
+        if (cell.value == '0') {
+            floodFill(row, col);
+        }
+
         return cell.value != 'M';
+    }
+
+    private void floodFill(int row, int col) {
+        for (int[] direction : DIRECTIONS) {
+            int neighbourRow = row + direction[0];
+            int neighbourCol = col + direction[1];
+            if (isInBounds(neighbourRow, neighbourCol)) {
+                BoardCell neighbourCell = getCell(neighbourRow, neighbourCol);
+                if (!neighbourCell.isRevealed) {
+                    reveal(neighbourRow, neighbourCol);
+                }
+            }
+        }
     }
 
     public boolean isCleared() {
@@ -212,6 +229,15 @@ public final class Board {
 
         if (col < 0 || col >= this.cols) {
             throw new IndexOutOfBoundsException(col);
+        }
+    }
+
+    private boolean isInBounds(int row, int col) {
+        try {
+            checkBounds(row, col);
+            return true;
+        } catch (IndexOutOfBoundsException ex) {
+            return false;
         }
     }
 
