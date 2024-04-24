@@ -101,4 +101,89 @@ final class BoardTest {
             softly.assertBoardRevealed(expectedBoard);
         }
     }
+
+
+    @Test
+    void revealWithFloodFillBasicOneRevealed() {
+        String board = """
+                XXXXX
+                XXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 2);
+
+            String expectedBoard = """
+                    XX.XX
+                    XXXXX
+                        """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void revealWithFloodFillDoNotRevealBorders() {
+        String board = """
+                XXXXXXXXX
+                XXXXXXXXX
+                XMXXXXXXX
+                XXXXXXXXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(2, 4);
+
+            String expectedBoard = """
+                    .........
+                    .........
+                    XX.......
+                    XX.......
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void revealWithFloodFillCorner() {
+        String board = """
+                XXXXXXXXX
+                XXXXXXXXX
+                XMXXXXXXX
+                XXXXXXXXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 0);
+
+            String expectedBoard = """
+                    .........
+                    .........
+                    XX.......
+                    XX.......
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void revealWithFloodFillMoreMines() {
+        String board = """
+                XXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 0);
+
+            String expectedBoard = """
+                    ....XXXXX
+                    ....XXXXX
+                    X...XXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
 }
