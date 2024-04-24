@@ -73,6 +73,10 @@ final class BoardSoftAssertions implements AutoCloseable {
         return new Board(rows, cols, cells);
     }
 
+    void reveal(int row, int col) {
+        board.reveal(row, col);
+    }
+
     void assertRows(int expectedRows) {
         softly.assertThat(board.rows)
                 .as("Board rows")
@@ -95,6 +99,20 @@ final class BoardSoftAssertions implements AutoCloseable {
         softly.assertThat(board.isCleared())
                 .as("Board is cleared")
                 .isEqualTo(expectedCleared);
+    }
+
+    void assertBoardRevealed(String expectedBoard) {
+        String[] lines = expectedBoard.split("\n");
+        String actualBoard = "";
+        for (int row = 0; row < lines.length; row++) {
+            for (int column = 0; column < lines[row].length(); column++) {
+                actualBoard += board.getCell(row, column).isRevealed ? '.' : 'X';
+            }
+            actualBoard += "\n";
+        }
+        softly.assertThat(actualBoard)
+                .as("Board revealed")
+                .isEqualTo(expectedBoard);
     }
 
     void assertRow(int row, char... expectedValues) {

@@ -79,4 +79,26 @@ final class BoardTest {
             softly.assertRow(3, 'M', '4', '3', 'M', '2', '1', '0');
         }
     }
+
+    @Test
+    void revealWithFloodFillBasic() {
+        String board = """
+                XXXXXXXXX
+                XXXXXXXXX
+                XXXXMXXXX
+                XXXXXXXXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 0);
+
+            String expectedBoard = """
+                    .........
+                    .........
+                    ....X....
+                    ....X....
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
 }
