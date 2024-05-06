@@ -13,9 +13,13 @@ public final class Minesweeper {
             ╚═╝░░░░░╚═╝╚═╝╚═╝░░╚══╝╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝╚═╝░░░░░╚══════╝╚═╝░░╚═╝
             """;
 
-    static Board board;
+    Board board;
 
     public static void main(String[] args) {
+        new Minesweeper();
+    }
+
+    public Minesweeper() {
         System.out.println(LOGO);
         board = new Board(5, 10, 10);
         Scanner scanner = new Scanner(System.in);
@@ -59,48 +63,48 @@ public final class Minesweeper {
         }
     }
 
-    private static void doExport() {
+    private void doExport() {
         System.out.println(board.exportBoard());
     }
 
-    private static void doImport(String content) {
+    private void doImport(String content) {
         board = Board.importBoard(content);
         System.out.println("Board imported!");
         doPrintBoard();
     }
 
-    private static void doWon() {
+    private void doWon() {
         System.out.println("You won!");
         System.exit(0);
     }
 
-    private static void doPrintBoard() {
+    private void doPrintBoard() {
         board.print(System.out);
     }
 
-    private static boolean doReveal(int fst, int snd) {
+    private boolean doReveal(int fst, int snd) {
         boolean result = board.reveal(fst, snd);
         doPrintBoard();
         return result;
     }
 
-    private static void doDebug(Board board) {
+    private void doDebug(Board board) {
         System.out.println("Debug output: \n");
         System.out.println(board.toString());
     }
 
-    private static void doExit() {
+    private void doExit() {
         System.out.println("You have called exit - defeat");
         System.exit(10);
     }
 
-    private static void handle_MINE(int fst, int snd) {
+    private void handle_MINE(int fst, int snd) {
         System.out.printf("Found mine @ coordinates [%d, %d]\n", fst, snd);
         System.out.println("\n*** You lost!***\n");
         System.exit(1);
     }
 
-    private static void handle_ERROR(String err) {
+    private void handle_ERROR(String err) {
         System.err.println("Error - " + err);
         System.exit(100);
     }
