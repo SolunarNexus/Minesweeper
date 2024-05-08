@@ -237,6 +237,29 @@ class MinesweeperTest {
         errorCommand("r x 1", "Expected numbers for row and column");
     }
 
+    @Test
+    void errorCommandReveal_outOfBounds() {
+        String input = """
+                reveal 1 100
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.reveal(1, 100)).thenThrow(new IndexOutOfBoundsException(100));
+
+        minesweeper.runGame();
+
+        verify(board).print(out);
+        verify(board).reveal(1, 100);
+        verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).print(">>> ");
+        verify(out).println("Invalid command: reveal 1 100 (Row or column out of bounds)");
+        verify(out).println(Minesweeper.USAGE);
+        verify(out).println("You have called exit - defeat");
+        verifyNoMoreInteractions(board, out, err);
+
+        verify(wrapper).exit(10);
+    }
+
     private void errorCommand(String command, String messageExpected) {
         System.setIn(new ByteArrayInputStream((command + "\nexit").getBytes()));
 

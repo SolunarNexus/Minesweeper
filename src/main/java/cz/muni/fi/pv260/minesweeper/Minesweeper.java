@@ -89,6 +89,8 @@ public final class Minesweeper {
                 }
             } catch (NumberFormatException e) {
                 throw new InvalidCommandException("Expected numbers for row and column");
+            } catch (IndexOutOfBoundsException e) {
+                throw new InvalidCommandException("Row or column out of bounds");
             }
             if (board.isCleared()) {
                 doWon();
