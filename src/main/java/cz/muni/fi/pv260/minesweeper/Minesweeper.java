@@ -106,8 +106,8 @@ public final class Minesweeper {
         systemWrapper.exit(10);
     }
 
-    private void handleMine(int fst, int snd) {
-        System.out.printf("Found mine @ coordinates [%d, %d]\n", fst, snd);
+    private void handleMine(int row, int column) {
+        System.out.printf("Found mine @ coordinates [%d, %d]\n", row, column);
         System.out.println("\n*** You lost!***\n");
         isGameFinished = true;
         systemWrapper.exit(1);
