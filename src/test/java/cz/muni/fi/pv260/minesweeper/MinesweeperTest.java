@@ -214,40 +214,42 @@ class MinesweeperTest {
 
     @Test
     void errorCommandLength1() {
-        errorCommand("invalid");
+        errorCommand("invalid", "Unknown command");
     }
 
     @Test
     void errorCommandLength2() {
-        errorCommand("invalid command");
+        errorCommand("invalid command", "Unknown command");
     }
 
     @Test
     void errorCommandLength3() {
-        errorCommand("long invalid command");
+        errorCommand("long invalid command", "Unknown command");
     }
 
     @Test
     void errorCommandLength4() {
-        errorCommand("super long invalid command");
+        errorCommand("super long invalid command", "Unknown command");
     }
 
     @Test
     void errorCommandReveal_notNumber() {
-        errorCommand("r x 1");
+        errorCommand("r x 1", "Expected numbers for row and column");
     }
 
-    private void errorCommand(String command) {
-        System.setIn(new ByteArrayInputStream(command.getBytes()));
+    private void errorCommand(String command, String messageExpected) {
+        System.setIn(new ByteArrayInputStream((command + "\nexit").getBytes()));
 
         minesweeper.runGame();
 
         verify(board).print(out);
         verify(out).println(Minesweeper.LOGO);
-        verify(out).print(">>> ");
-        verify(err).println("Error - Invalid command: " + command);
+        verify(out, times(2)).print(">>> ");
+        verify(out).println("Invalid command: " + command + " (" + messageExpected + ")");
+        verify(out).println(Minesweeper.USAGE);
+        verify(out).println("You have called exit - defeat");
         verifyNoMoreInteractions(board, out, err);
 
-        verify(wrapper).exit(100);
+        verify(wrapper).exit(10);
     }
 }

@@ -15,6 +15,15 @@ public final class Minesweeper {
             ╚═╝░░░░░╚═╝╚═╝╚═╝░░╚══╝╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝╚═╝░░░░░╚══════╝╚═╝░░╚═╝
             """;
 
+    public static final String USAGE = """
+            Supported commands:
+            r[eveal] <row> <column> - reveals cell
+            d[ebug] - prints debug output
+            export - exports current board
+            import <base64-encoded board> - imports new board
+            exit | quit - exits the game
+            """;
+
     Board board;
     SystemWrapper systemWrapper;
     boolean isGameFinished = false;
@@ -47,7 +56,7 @@ public final class Minesweeper {
             try {
                 doOneStep(parts);
             } catch (InvalidCommandException e) {
-                handleError("Invalid command: " + inputLine);
+                handleInvalidCommand(e, inputLine);
             }
         }
     }
@@ -63,13 +72,13 @@ public final class Minesweeper {
             } else if ("export".equalsIgnoreCase(parts[0])) {
                 doExport();
             } else {
-                throw new InvalidCommandException();
+                throw new InvalidCommandException("Unknown command");
             }
         } else if (parts.length == 2) {
             if ("import".equalsIgnoreCase(parts[0])) {
                 doImport(parts[1]);
             } else {
-                throw new InvalidCommandException();
+                throw new InvalidCommandException("Unknown command");
             }
         } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
             try {
@@ -79,13 +88,13 @@ public final class Minesweeper {
                     handleMine(row, column);
                 }
             } catch (NumberFormatException e) {
-                throw new InvalidCommandException();
+                throw new InvalidCommandException("Expected numbers for row and column");
             }
             if (board.isCleared()) {
                 doWon();
             }
         } else {
-            throw new InvalidCommandException();
+            throw new InvalidCommandException("Unknown command");
         }
     }
 
@@ -133,9 +142,12 @@ public final class Minesweeper {
         systemWrapper.exit(1);
     }
 
-    private void handleError(String err) {
-        System.err.println("Error - " + err);
-        isGameFinished = true;
-        systemWrapper.exit(100);
+    private void handleInvalidCommand(InvalidCommandException exception, String command) {
+        System.out.println("Invalid command: " + command + " (" + exception.getMessage() + ")");
+        doPrintUsage();
+    }
+
+    private void doPrintUsage() {
+        System.out.println(USAGE);
     }
 }
