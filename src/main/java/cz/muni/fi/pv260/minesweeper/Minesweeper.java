@@ -14,12 +14,14 @@ public final class Minesweeper {
             """;
 
     Board board;
+    SystemWrapper systemWrapper;
 
     public static void main(String[] args) {
-        new Minesweeper();
+        new Minesweeper(new SystemWrapper());
     }
 
-    public Minesweeper() {
+    public Minesweeper(SystemWrapper systemWrapper) {
+        this.systemWrapper = systemWrapper;
         System.out.println(LOGO);
         board = new Board(5, 10, 10);
         Scanner scanner = new Scanner(System.in);
@@ -75,7 +77,7 @@ public final class Minesweeper {
 
     private void doWon() {
         System.out.println("You won!");
-        System.exit(0);
+        systemWrapper.exit(0);
     }
 
     private void doPrintBoard() {
@@ -95,17 +97,17 @@ public final class Minesweeper {
 
     private void doExit() {
         System.out.println("You have called exit - defeat");
-        System.exit(10);
+        systemWrapper.exit(10);
     }
 
     private void handle_MINE(int fst, int snd) {
         System.out.printf("Found mine @ coordinates [%d, %d]\n", fst, snd);
         System.out.println("\n*** You lost!***\n");
-        System.exit(1);
+        systemWrapper.exit(1);
     }
 
     private void handle_ERROR(String err) {
         System.err.println("Error - " + err);
-        System.exit(100);
+        systemWrapper.exit(100);
     }
 }
