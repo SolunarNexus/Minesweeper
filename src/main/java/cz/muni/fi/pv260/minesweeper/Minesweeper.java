@@ -51,10 +51,14 @@ public final class Minesweeper {
                     doDebug(board);
                 } else if ("export".equalsIgnoreCase(parts[0])) {
                     doExport();
+                } else {
+                    handleError("Invalid command: " + inputLine);
                 }
             } else if (parts.length == 2) {
                 if ("import".equalsIgnoreCase(parts[0])) {
                     doImport(parts[1]);
+                } else {
+                    handleError("Invalid command: " + inputLine);
                 }
             } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
                 if (!doReveal(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))) {
@@ -89,8 +93,8 @@ public final class Minesweeper {
         board.print(System.out);
     }
 
-    private boolean doReveal(int fst, int snd) {
-        boolean result = board.reveal(fst, snd);
+    private boolean doReveal(int row, int column) {
+        boolean result = board.reveal(row, column);
         doPrintBoard();
         return result;
     }

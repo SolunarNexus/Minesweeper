@@ -213,18 +213,34 @@ class MinesweeperTest {
     }
 
     @Test
-    void errorCommand() {
-        String input = """
-                invalid valid command test
-                """;
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
+    void errorCommandLength1() {
+        errorCommand("invalid");
+    }
+
+    @Test
+    void errorCommandLength2() {
+        errorCommand("invalid command");
+    }
+
+    @Test
+    void errorCommandLength3() {
+        errorCommand("long invalid command");
+    }
+
+    @Test
+    void errorCommandLength4() {
+        errorCommand("super long invalid command");
+    }
+
+    private void errorCommand(String command) {
+        System.setIn(new ByteArrayInputStream(command.getBytes()));
 
         minesweeper.runGame();
 
         verify(board).print(out);
         verify(out).println(Minesweeper.LOGO);
         verify(out).print(">>> ");
-        verify(err).println("Error - Invalid command: invalid valid command test");
+        verify(err).println("Error - Invalid command: " + command);
         verifyNoMoreInteractions(board, out, err);
 
         verify(wrapper).exit(100);
