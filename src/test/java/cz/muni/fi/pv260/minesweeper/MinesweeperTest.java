@@ -232,6 +232,11 @@ class MinesweeperTest {
         errorCommand("super long invalid command");
     }
 
+    @Test
+    void errorCommandReveal_notNumber() {
+        errorCommand("r x 1");
+    }
+
     private void errorCommand(String command) {
         System.setIn(new ByteArrayInputStream(command.getBytes()));
 

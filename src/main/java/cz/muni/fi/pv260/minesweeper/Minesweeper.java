@@ -72,8 +72,14 @@ public final class Minesweeper {
                 throw new InvalidCommandException();
             }
         } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
-            if (!doReveal(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))) {
-                handleMine(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+            try {
+                int row = Integer.parseInt(parts[1]);
+                int column = Integer.parseInt(parts[2]);
+                if (!doReveal(row, column)) {
+                    handleMine(row, column);
+                }
+            } catch (NumberFormatException e) {
+                throw new InvalidCommandException();
             }
             if (board.isCleared()) {
                 doWon();
