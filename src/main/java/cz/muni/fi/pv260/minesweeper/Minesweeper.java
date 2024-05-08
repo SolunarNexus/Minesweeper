@@ -1,5 +1,7 @@
 package cz.muni.fi.pv260.minesweeper;
 
+import cz.muni.fi.pv260.minesweeper.exceptions.InvalidCommandException;
+
 import java.util.Scanner;
 
 public final class Minesweeper {
@@ -42,34 +44,42 @@ public final class Minesweeper {
                 continue;
             }
 
-            if (parts.length == 1) {
-                if ("exit".equalsIgnoreCase(parts[0])) {
-                    doExit();
-                } else if ("quit".equalsIgnoreCase(parts[0])) {
-                    doExit();
-                } else if ("debug".equalsIgnoreCase(parts[0]) || "d".equalsIgnoreCase(parts[0])) {
-                    doDebug(board);
-                } else if ("export".equalsIgnoreCase(parts[0])) {
-                    doExport();
-                } else {
-                    handleError("Invalid command: " + inputLine);
-                }
-            } else if (parts.length == 2) {
-                if ("import".equalsIgnoreCase(parts[0])) {
-                    doImport(parts[1]);
-                } else {
-                    handleError("Invalid command: " + inputLine);
-                }
-            } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
-                if (!doReveal(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))) {
-                    handleMine(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
-                }
-                if (board.isCleared()) {
-                    doWon();
-                }
-            } else {
+            try {
+                doOneStep(parts);
+            } catch (InvalidCommandException e) {
                 handleError("Invalid command: " + inputLine);
             }
+        }
+    }
+
+    private void doOneStep(String[] parts) throws InvalidCommandException {
+        if (parts.length == 1) {
+            if ("exit".equalsIgnoreCase(parts[0])) {
+                doExit();
+            } else if ("quit".equalsIgnoreCase(parts[0])) {
+                doExit();
+            } else if ("debug".equalsIgnoreCase(parts[0]) || "d".equalsIgnoreCase(parts[0])) {
+                doDebug(board);
+            } else if ("export".equalsIgnoreCase(parts[0])) {
+                doExport();
+            } else {
+                throw new InvalidCommandException();
+            }
+        } else if (parts.length == 2) {
+            if ("import".equalsIgnoreCase(parts[0])) {
+                doImport(parts[1]);
+            } else {
+                throw new InvalidCommandException();
+            }
+        } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
+            if (!doReveal(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))) {
+                handleMine(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+            }
+            if (board.isCleared()) {
+                doWon();
+            }
+        } else {
+            throw new InvalidCommandException();
         }
     }
 
