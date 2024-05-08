@@ -58,13 +58,13 @@ public final class Minesweeper {
                 }
             } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
                 if (!doReveal(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))) {
-                    handle_MINE(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+                    handleMine(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
                 }
                 if (board.isCleared()) {
                     doWon();
                 }
             } else {
-                handle_ERROR("Invalid command: " + inputLine);
+                handleError("Invalid command: " + inputLine);
             }
         }
     }
@@ -106,14 +106,14 @@ public final class Minesweeper {
         systemWrapper.exit(10);
     }
 
-    private void handle_MINE(int fst, int snd) {
+    private void handleMine(int fst, int snd) {
         System.out.printf("Found mine @ coordinates [%d, %d]\n", fst, snd);
         System.out.println("\n*** You lost!***\n");
         isGameFinished = true;
         systemWrapper.exit(1);
     }
 
-    private void handle_ERROR(String err) {
+    private void handleError(String err) {
         System.err.println("Error - " + err);
         isGameFinished = true;
         systemWrapper.exit(100);
