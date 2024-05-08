@@ -17,15 +17,18 @@ public final class Minesweeper {
     SystemWrapper systemWrapper;
 
     public static void main(String[] args) {
-        new Minesweeper(new SystemWrapper());
+        Minesweeper minesweeper = new Minesweeper(new SystemWrapper());
+        minesweeper.runGame();
     }
 
     public Minesweeper(SystemWrapper systemWrapper) {
         this.systemWrapper = systemWrapper;
         System.out.println(LOGO);
         board = new Board(5, 10, 10);
-        Scanner scanner = new Scanner(System.in);
+    }
 
+    private void runGame() {
+        Scanner scanner = new Scanner(System.in);
         doPrintBoard();
         while (true) {
             System.out.print(">>> ");
