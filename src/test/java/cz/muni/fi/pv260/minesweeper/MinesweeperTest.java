@@ -53,4 +53,29 @@ class MinesweeperTest {
         verifyNoMoreInteractions(out, err);
     }
 
+    @Test
+    void doReveal_mine() {
+        String input = """
+                reveal 1 2
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.reveal(1, 2)).thenReturn(false);
+
+        minesweeper.runGame();
+
+        verify(board).reveal(1, 2);
+        verify(board, times(2)).print(out);
+        verify(board).isCleared();
+        verifyNoMoreInteractions(board);
+
+        verify(wrapper).exit(1);
+
+
+        verify(out).println(Minesweeper.LOGO);
+        verify(out).print(">>> ");
+        verify(out).printf("Found mine @ coordinates [%d, %d]\n", 1, 2);
+        verify(out).println("\n*** You lost!***\n");
+        verifyNoMoreInteractions(out, err);
+    }
+
 }
