@@ -15,6 +15,7 @@ public final class Minesweeper {
 
     Board board;
     SystemWrapper systemWrapper;
+    boolean isGameFinished = false;
 
     public static void main(String[] args) {
         Minesweeper minesweeper = new Minesweeper(new SystemWrapper());
@@ -27,10 +28,10 @@ public final class Minesweeper {
         board = new Board(5, 10, 10);
     }
 
-    private void runGame() {
+    void runGame() {
         Scanner scanner = new Scanner(System.in);
         doPrintBoard();
-        while (true) {
+        while (!isGameFinished) {
             System.out.print(">>> ");
             var inputLine = scanner.nextLine();
             if (inputLine.isBlank())
@@ -80,6 +81,7 @@ public final class Minesweeper {
 
     private void doWon() {
         System.out.println("You won!");
+        isGameFinished = true;
         systemWrapper.exit(0);
     }
 
@@ -100,17 +102,20 @@ public final class Minesweeper {
 
     private void doExit() {
         System.out.println("You have called exit - defeat");
+        isGameFinished = true;
         systemWrapper.exit(10);
     }
 
     private void handle_MINE(int fst, int snd) {
         System.out.printf("Found mine @ coordinates [%d, %d]\n", fst, snd);
         System.out.println("\n*** You lost!***\n");
+        isGameFinished = true;
         systemWrapper.exit(1);
     }
 
     private void handle_ERROR(String err) {
         System.err.println("Error - " + err);
+        isGameFinished = true;
         systemWrapper.exit(100);
     }
 }

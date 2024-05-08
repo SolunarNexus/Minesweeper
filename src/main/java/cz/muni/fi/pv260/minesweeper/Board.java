@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.random.RandomGenerator;
 
-public final class Board {
+public class Board {
 
     private static final int[][] DIRECTIONS = new int[][]{
             {0, 1},
