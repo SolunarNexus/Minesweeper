@@ -2,6 +2,9 @@ package cz.muni.fi.pv260.minesweeper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
@@ -28,23 +31,10 @@ class MinesweeperTest {
         minesweeper.board = board;
     }
 
-    @Test
-    void doReveal() {
-        doRevealCommand("""
-                reveal 1 2
-                exit
-                """);
-    }
-
-    @Test
-    void doRevealShort() {
-        doRevealCommand("""
-                r 1 2
-                exit
-                """);
-    }
-
-    private void doRevealCommand(String input) {
+    @ParameterizedTest
+    @ValueSource(strings = {"reveal 1 2", "r 1 2"})
+    void testRevealCommand(String command) {
+        String input = command + "\nexit";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         when(board.reveal(1, 2)).thenReturn(true);
 
@@ -114,17 +104,9 @@ class MinesweeperTest {
         verifyNoMoreInteractions(out, err);
     }
 
-    @Test
-    void doExit() {
-        doQuitCommand("exit");
-    }
-
-    @Test
-    void doQuit() {
-        doQuitCommand("quit");
-    }
-
-    private void doQuitCommand(String command) {
+    @ParameterizedTest
+    @ValueSource(strings = {"quit", "exit"})
+    void testQuit(String command) {
         System.setIn(new ByteArrayInputStream(command.getBytes()));
 
         minesweeper.runGame();
@@ -204,23 +186,10 @@ class MinesweeperTest {
         verify(wrapper).exit(10);
     }
 
-    @Test
-    void doDebug() {
-        doDebugCommand("""
-                debug
-                exit
-                """);
-    }
-
-    @Test
-    void doDebugShort() {
-        doDebugCommand("""
-                d
-                exit
-                """);
-    }
-
-    void doDebugCommand(String input) {
+    @ParameterizedTest
+    @ValueSource(strings = {"debug", "d"})
+    void testDebug(String command) {
+        String input = command + "\nexit";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         minesweeper.runGame();
@@ -234,31 +203,6 @@ class MinesweeperTest {
         verifyNoMoreInteractions(board, out, err);
 
         verify(wrapper).exit(10);
-    }
-
-    @Test
-    void errorCommandLength1() {
-        errorCommand("invalid", "Unknown command");
-    }
-
-    @Test
-    void errorCommandLength2() {
-        errorCommand("invalid command", "Unknown command");
-    }
-
-    @Test
-    void errorCommandLength3() {
-        errorCommand("long invalid command", "Unknown command");
-    }
-
-    @Test
-    void errorCommandLength4() {
-        errorCommand("super long invalid command", "Unknown command");
-    }
-
-    @Test
-    void errorCommandReveal_notNumber() {
-        errorCommand("r x 1", "Expected numbers for row and column");
     }
 
     @Test
@@ -284,7 +228,16 @@ class MinesweeperTest {
         verify(wrapper).exit(10);
     }
 
-    private void errorCommand(String command, String messageExpected) {
+    @ParameterizedTest
+    @CsvSource({
+            "invalid,Unknown command",
+            "invalid command,Unknown command",
+            "long invalid command,Unknown command",
+            "super long invalid command,Unknown command",
+            "r x 1,Expected numbers for row and column",
+    })
+
+    void errorCommand(String command, String messageExpected) {
         System.setIn(new ByteArrayInputStream((command + "\nexit").getBytes()));
 
         minesweeper.runGame();
