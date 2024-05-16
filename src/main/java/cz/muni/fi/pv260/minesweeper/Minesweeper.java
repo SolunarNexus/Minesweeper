@@ -26,6 +26,7 @@ public final class Minesweeper {
 
     Board board;
     SystemWrapper systemWrapper;
+    Scanner scanner;
     boolean isGameFinished = false;
 
     public static void main(String[] args) {
@@ -40,7 +41,7 @@ public final class Minesweeper {
     }
 
     void runGame() {
-        Scanner scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in);
         doPrintBoard();
         while (!isGameFinished) {
             System.out.print(">>> ");
@@ -105,9 +106,14 @@ public final class Minesweeper {
     }
 
     private void doImport(String content) {
-        board = Board.importBoard(content);
-        System.out.println("Board imported!");
-        doPrintBoard();
+        System.out.println("Are you sure you want to import a replace current board? (Y/n)");
+        if (scanner.nextLine().equals("Y")) {
+            board = Board.importBoard(content);
+            System.out.println("Board imported!");
+            doPrintBoard();
+        } else {
+            System.out.println("Board import discarded");
+        }
     }
 
     private void doWon() {
