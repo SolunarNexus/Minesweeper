@@ -213,4 +213,30 @@ final class BoardTest {
             );
         }
     }
+
+    @Test
+    void boardImport() {
+        Board board = Board.importBoard("NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK");
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.assertBoardValues(
+                    """
+                            011113MM10
+                            12M22MM420
+                            M43M223M10
+                            M3M2101110
+                            1211000000
+                            """
+            );
+            softly.assertBoardRevealed(
+                    """
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            """
+            );
+        }
+    }
 }
