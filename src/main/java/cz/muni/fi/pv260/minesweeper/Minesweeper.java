@@ -30,14 +30,14 @@ public final class Minesweeper {
     boolean isGameFinished = false;
 
     public static void main(String[] args) {
-        Minesweeper minesweeper = new Minesweeper(new SystemWrapper());
+        Minesweeper minesweeper = new Minesweeper(new SystemWrapper(), new GameConfiguration());
         minesweeper.runGame();
     }
 
-    public Minesweeper(SystemWrapper systemWrapper) {
+    public Minesweeper(SystemWrapper systemWrapper, GameConfiguration gameConfiguration) {
         this.systemWrapper = systemWrapper;
         System.out.println(LOGO);
-        board = new Board(5, 10, 10);
+        board = new Board(gameConfiguration.getRows(), gameConfiguration.getCols(), gameConfiguration.getMines());
     }
 
     void runGame() {
