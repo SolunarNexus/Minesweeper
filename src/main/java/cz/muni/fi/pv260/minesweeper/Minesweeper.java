@@ -30,7 +30,8 @@ public final class Minesweeper {
     boolean isGameFinished = false;
 
     public static void main(String[] args) {
-        Minesweeper minesweeper = new Minesweeper(new SystemWrapper(), new GameConfiguration());
+        GameConfiguration configuration = ArgumentParser.parseGameConfiguration(args);
+        Minesweeper minesweeper = new Minesweeper(new SystemWrapper(), configuration);
         minesweeper.runGame();
     }
 
