@@ -186,4 +186,31 @@ final class BoardTest {
             softly.assertBoardRevealed(expectedBoard);
         }
     }
+
+    @Test
+    void createBoardWithSeed_shouldGenerateTheSameGame() {
+        Board board = new Board(5, 5, 5, 1234L);
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            board.reveal(0, 0);
+            softly.assertBoardValues(
+                    """
+                            001M1
+                            01221
+                            12M21
+                            M22M2
+                            1112M
+                            """
+            );
+            softly.assertBoardRevealed(
+                    """
+                            ...XX
+                            ...XX
+                            ..XXX
+                            XXXXX
+                            XXXXX
+                            """
+            );
+        }
+    }
 }

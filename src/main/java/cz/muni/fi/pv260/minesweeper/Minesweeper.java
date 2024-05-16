@@ -38,7 +38,7 @@ public final class Minesweeper {
     public Minesweeper(SystemWrapper systemWrapper, GameConfiguration gameConfiguration) {
         this.systemWrapper = systemWrapper;
         System.out.println(LOGO);
-        board = new Board(gameConfiguration.getRows(), gameConfiguration.getCols(), gameConfiguration.getMines());
+        board = new Board(gameConfiguration.getRows(), gameConfiguration.getCols(), gameConfiguration.getMines(), gameConfiguration.getSeed());
     }
 
     void runGame() {

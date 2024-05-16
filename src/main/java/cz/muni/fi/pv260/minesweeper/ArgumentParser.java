@@ -19,6 +19,9 @@ public class ArgumentParser {
                     case "--mines":
                         configuration.setMines(Integer.parseInt(args[i + 1]));
                         break;
+                    case "--seed":
+                        configuration.setSeed(Long.parseLong(args[i + 1]));
+                        break;
                     default:
                         throw new IllegalArgumentException("Unknown argument " + args[i]);
                 }

@@ -13,14 +13,16 @@ public class ArgumentParserTest {
         assertThat(configuration.getRows()).isEqualTo(5);
         assertThat(configuration.getCols()).isEqualTo(10);
         assertThat(configuration.getMines()).isEqualTo(10);
+        assertThat(configuration.getSeed()).isNull();
     }
 
     @Test
     public void testValidArguments() {
-        GameConfiguration configuration = ArgumentParser.parseGameConfiguration(new String[]{"--rows", "1", "--cols", "2", "--mines", "3"});
+        GameConfiguration configuration = ArgumentParser.parseGameConfiguration(new String[]{"--rows", "1", "--cols", "2", "--mines", "3", "--seed", "4"});
         assertThat(configuration.getRows()).isEqualTo(1);
         assertThat(configuration.getCols()).isEqualTo(2);
         assertThat(configuration.getMines()).isEqualTo(3);
+        assertThat(configuration.getSeed()).isEqualTo(4);
     }
 
     @Test

@@ -115,6 +115,20 @@ final class BoardSoftAssertions implements AutoCloseable {
                 .isEqualTo(expectedBoard);
     }
 
+    void assertBoardValues(String expectedBoard) {
+        String[] lines = expectedBoard.split("\n");
+        String actualBoard = "";
+        for (int row = 0; row < lines.length; row++) {
+            for (int column = 0; column < lines[row].length(); column++) {
+                actualBoard += board.getCell(row, column).value;
+            }
+            actualBoard += "\n";
+        }
+        softly.assertThat(actualBoard)
+                .as("Board values")
+                .isEqualTo(expectedBoard);
+    }
+
     void assertRow(int row, char... expectedValues) {
         for (int column = 0; column < expectedValues.length; column++) {
             assertCell(row, column, expectedValues[column]);

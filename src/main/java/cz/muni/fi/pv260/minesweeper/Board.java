@@ -24,8 +24,9 @@ public class Board {
 
     final int rows, cols, mines;
     List<BoardCell> cells = null;
+    Long seed;
 
-    Board(int rows, int cols, int mines) {
+    Board(int rows, int cols, int mines, Long seed) {
         if (rows * cols <= mines)
             throw new IllegalArgumentException("Oops something went wrong");
 
@@ -33,6 +34,7 @@ public class Board {
         if (rows < 3 || cols < 3 || rows > 99 || cols > 99 || mines < 1)
             throw new IllegalArgumentException("Error");
 
+        this.seed = seed;
         this.rows = rows;
         this.cols = cols;
         this.mines = mines;
@@ -172,7 +174,7 @@ public class Board {
         for (int i = 0; i < rows * cols; i++) {
             cells.add(new BoardCell());
         }
-        RandomGenerator random = new Random();
+        RandomGenerator random = seed != null ? new Random(seed) : new Random();
         int mc = mines;
         while (mc > 0) {
             var tmp1 = random.nextInt(this.rows);
