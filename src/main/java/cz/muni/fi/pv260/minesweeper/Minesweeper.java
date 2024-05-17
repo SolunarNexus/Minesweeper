@@ -1,7 +1,5 @@
 package cz.muni.fi.pv260.minesweeper;
 
-import cz.muni.fi.pv260.minesweeper.exceptions.InvalidCommandException;
-
 import java.util.Scanner;
 
 public final class Minesweeper {
@@ -55,15 +53,11 @@ public final class Minesweeper {
                 continue;
             }
 
-            try {
-                doOneStep(parts);
-            } catch (InvalidCommandException e) {
-                handleInvalidCommand(e);
-            }
+            doOneStep(parts);
         }
     }
 
-    private void doOneStep(String[] parts) throws InvalidCommandException {
+    private void doOneStep(String[] parts) {
         if (parts.length == 1) {
             if ("exit".equalsIgnoreCase(parts[0])) {
                 doExit();
@@ -74,13 +68,13 @@ public final class Minesweeper {
             } else if ("export".equalsIgnoreCase(parts[0])) {
                 doExport();
             } else {
-                throw new InvalidCommandException("Unknown command");
+                handleInvalidCommand("Unknown command");
             }
         } else if (parts.length == 2) {
             if ("import".equalsIgnoreCase(parts[0])) {
                 doImport(parts[1]);
             } else {
-                throw new InvalidCommandException("Unknown command");
+                handleInvalidCommand("Unknown command");
             }
         } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
             try {
@@ -90,15 +84,17 @@ public final class Minesweeper {
                     handleMine(row, column);
                 }
             } catch (NumberFormatException e) {
-                throw new InvalidCommandException("Expected numbers for row and column");
+                handleInvalidCommand("Expected numbers for row and column");
+                return;
             } catch (IndexOutOfBoundsException e) {
-                throw new InvalidCommandException("Row or column out of bounds");
+                handleInvalidCommand("Row or column out of bounds");
+                return;
             }
             if (board.isCleared()) {
                 doWon();
             }
         } else {
-            throw new InvalidCommandException("Unknown command");
+            handleInvalidCommand("Unknown command");
         }
     }
 
@@ -151,8 +147,8 @@ public final class Minesweeper {
         systemWrapper.exit(1);
     }
 
-    private void handleInvalidCommand(InvalidCommandException exception) {
-        System.out.println("Invalid command: " + exception.getMessage());
+    private void handleInvalidCommand(String message) {
+        System.out.println("Invalid command: " + message);
         doPrintUsage();
     }
 
