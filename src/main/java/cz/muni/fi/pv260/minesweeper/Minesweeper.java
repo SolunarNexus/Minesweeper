@@ -76,17 +76,7 @@ public final class Minesweeper {
                 }
                 break;
             case "reveal", "r":
-                if (parts.length == 3) {
-                    try {
-                        int row = Integer.parseInt(parts[1]);
-                        int column = Integer.parseInt(parts[2]);
-                        handleRevealCommand(row, column);
-                    } catch (NumberFormatException e) {
-                        handleInvalidCommand("Expected numbers for row and column");
-                    }
-                } else {
-                    handleInvalidCommand("Expected row and column coordinates");
-                }
+                handleRevealCommand(parts);
                 break;
             default:
                 handleInvalidCommand("Unknown command");
@@ -118,19 +108,30 @@ public final class Minesweeper {
         board.print(System.out);
     }
 
-    private void handleRevealCommand(int row, int column) {
-        if (!board.isInBounds(row, column)) {
-            handleInvalidCommand("Row or column out of bounds");
+    private void handleRevealCommand(String parts[]) {
+        if (parts.length != 3) {
+            handleInvalidCommand("Expected row and column coordinates");
             return;
         }
-        boolean result = board.reveal(row, column);
-        doPrintBoard();
-        if (!result) {
-            handleMine(row, column);
-        }
+        try {
+            int row = Integer.parseInt(parts[1]);
+            int column = Integer.parseInt(parts[2]);
 
-        if (board.isCleared()) {
-            doWon();
+            if (!board.isInBounds(row, column)) {
+                handleInvalidCommand("Row or column out of bounds");
+                return;
+            }
+            boolean result = board.reveal(row, column);
+            doPrintBoard();
+            if (!result) {
+                handleMine(row, column);
+            }
+
+            if (board.isCleared()) {
+                doWon();
+            }
+        } catch (NumberFormatException e) {
+            handleInvalidCommand("Expected numbers for row and column");
         }
     }
 
