@@ -220,7 +220,7 @@ class MinesweeperTest {
         verify(board).reveal(1, 100);
         verify(out).println(Minesweeper.LOGO);
         verify(out, times(2)).print(">>> ");
-        verify(out).println("Invalid command: reveal 1 100 (Row or column out of bounds)");
+        verify(out).println("Invalid command: Row or column out of bounds");
         verify(out).println(Minesweeper.USAGE);
         verify(out).println("You have called exit - defeat");
         verifyNoMoreInteractions(board, out, err);
@@ -245,7 +245,7 @@ class MinesweeperTest {
         verify(board).print(out);
         verify(out).println(Minesweeper.LOGO);
         verify(out, times(2)).print(">>> ");
-        verify(out).println("Invalid command: " + command + " (" + messageExpected + ")");
+        verify(out).println("Invalid command: " + messageExpected);
         verify(out).println(Minesweeper.USAGE);
         verify(out).println("You have called exit - defeat");
         verifyNoMoreInteractions(board, out, err);

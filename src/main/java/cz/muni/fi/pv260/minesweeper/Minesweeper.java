@@ -58,7 +58,7 @@ public final class Minesweeper {
             try {
                 doOneStep(parts);
             } catch (InvalidCommandException e) {
-                handleInvalidCommand(e, inputLine);
+                handleInvalidCommand(e);
             }
         }
     }
@@ -151,8 +151,8 @@ public final class Minesweeper {
         systemWrapper.exit(1);
     }
 
-    private void handleInvalidCommand(InvalidCommandException exception, String command) {
-        System.out.println("Invalid command: " + command + " (" + exception.getMessage() + ")");
+    private void handleInvalidCommand(InvalidCommandException exception) {
+        System.out.println("Invalid command: " + exception.getMessage());
         doPrintUsage();
     }
 
