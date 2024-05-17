@@ -206,9 +206,7 @@ public class Board {
                 var row = dir[0] + r;
                 var col = dir[1] + c;
 
-                try {
-                    checkBounds(row, col);
-                } catch (IndexOutOfBoundsException ex) {
+                if (!isInBounds(row, col)) {
                     continue;
                 }
 
@@ -223,23 +221,15 @@ public class Board {
         return 'M';
     }
 
-    private void checkBounds(int row, int col) {
+    boolean isInBounds(int row, int col) {
         if (row < 0 || row >= this.rows) {
-            throw new IndexOutOfBoundsException(row);
+            return false;
         }
 
         if (col < 0 || col >= this.cols) {
-            throw new IndexOutOfBoundsException(col);
-        }
-    }
-
-    boolean isInBounds(int row, int col) {
-        try {
-            checkBounds(row, col);
-            return true;
-        } catch (IndexOutOfBoundsException ex) {
             return false;
         }
+        return true;
     }
 
     private void checkTooSoon() {
