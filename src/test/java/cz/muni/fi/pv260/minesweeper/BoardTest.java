@@ -2,6 +2,8 @@ package cz.muni.fi.pv260.minesweeper;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 final class BoardTest {
 
     @Test
@@ -185,5 +187,64 @@ final class BoardTest {
                     """;
             softly.assertBoardRevealed(expectedBoard);
         }
+    }
+
+    @Test
+    void createBoardWithSeed_shouldGenerateTheSameGame() {
+        Board board = new Board(5, 5, 5, 1234L, 0, 0);
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            board.reveal(0, 0);
+            softly.assertBoardValues(
+                    """
+                            001M1
+                            01221
+                            12M21
+                            M22M2
+                            1112M
+                            """
+            );
+            softly.assertBoardRevealed(
+                    """
+                            ...XX
+                            ...XX
+                            ..XXX
+                            XXXXX
+                            XXXXX
+                            """
+            );
+        }
+    }
+
+    @Test
+    void boardImport() {
+        Board board = Board.importBoard("NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK");
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.assertBoardValues(
+                    """
+                            011113MM10
+                            12M22MM420
+                            M43M223M10
+                            M3M2101110
+                            1211000000
+                            """
+            );
+            softly.assertBoardRevealed(
+                    """
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            """
+            );
+        }
+    }
+
+    @Test
+    void boardImportInvalid() {
+        Board board = Board.importBoard("MTAsMTAKMTUsMg");
+        assertThat(board).isNull();
     }
 }

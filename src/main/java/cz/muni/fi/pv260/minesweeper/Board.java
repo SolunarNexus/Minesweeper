@@ -2,14 +2,10 @@ package cz.muni.fi.pv260.minesweeper;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.random.RandomGenerator;
 
-public final class Board {
+public class Board {
 
     private static final int[][] DIRECTIONS = new int[][]{
             {0, 1},
@@ -24,23 +20,17 @@ public final class Board {
 
     final int rows, cols, mines;
     List<BoardCell> cells = null;
+    Long seed;
 
-    Board(int rows, int cols, int mines) {
-        if (rows * cols <= mines)
-            throw new IllegalArgumentException("Oops something went wrong");
-
-
-        if (rows < 3 || cols < 3 || rows > 99 || cols > 99 || mines < 1)
-            throw new IllegalArgumentException("Error");
-
+    Board(int rows, int cols, int mines, Long seed, int selectedRow, int selectedCol) {
+        this.seed = seed;
         this.rows = rows;
         this.cols = cols;
         this.mines = mines;
+        generateRandomBoard(selectedRow, selectedCol);
     }
 
     Board(int rows, int cols, Collection<BoardCell> cells) {
-        if (rows * cols != cells.size())
-            throw new IllegalArgumentException("Oops something went wrong");
 
         this.rows = rows;
         this.cols = cols;
@@ -72,20 +62,28 @@ public final class Board {
 
         for (int i = 1; i < content.length; i++) {
             var rowColStr = content[i].split(",");
-            int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
-            cells.get(row * cols + col).value = 'M';
+            try {
+                int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
+                if (row >= rows || col >= cols) {
+                    return null;
+                }
+                if (row < 0 || col < 0) {
+                    return null;
+                }
+                cells.get(row * cols + col).value = 'M';
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
 
         return new Board(rows, cols, cells);
     }
 
     public BoardCell getCell(int r, int c) {
-        checkTooSoon();
         return cells.get(r * this.cols + c);
     }
 
     public boolean reveal(int row, int col) {
-        checkBounds(row, col);
 
         if (cells == null) {
             generateRandomBoard(row, col);
@@ -115,8 +113,6 @@ public final class Board {
     }
 
     public boolean isCleared() {
-        checkTooSoon();
-
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 var cell = getCell(r, c);
@@ -152,8 +148,6 @@ public final class Board {
     }
 
     public String exportBoard() {
-        checkTooSoon();
-
         StringBuffer sb = new StringBuffer();
         sb.append(String.format("%d,%d\n", rows, cols));
         for (int r = 0; r < rows; r++)
@@ -172,7 +166,7 @@ public final class Board {
         for (int i = 0; i < rows * cols; i++) {
             cells.add(new BoardCell());
         }
-        RandomGenerator random = new Random();
+        RandomGenerator random = seed != null ? new Random(seed) : new Random();
         int mc = mines;
         while (mc > 0) {
             var tmp1 = random.nextInt(this.rows);
@@ -205,9 +199,7 @@ public final class Board {
                 var row = dir[0] + r;
                 var col = dir[1] + c;
 
-                try {
-                    checkBounds(row, col);
-                } catch (IndexOutOfBoundsException ex) {
+                if (!isInBounds(row, col)) {
                     continue;
                 }
 
@@ -222,29 +214,15 @@ public final class Board {
         return 'M';
     }
 
-    private void checkBounds(int row, int col) {
+    boolean isInBounds(int row, int col) {
         if (row < 0 || row >= this.rows) {
-            throw new IndexOutOfBoundsException(row);
+            return false;
         }
 
         if (col < 0 || col >= this.cols) {
-            throw new IndexOutOfBoundsException(col);
-        }
-    }
-
-    private boolean isInBounds(int row, int col) {
-        try {
-            checkBounds(row, col);
-            return true;
-        } catch (IndexOutOfBoundsException ex) {
             return false;
         }
-    }
-
-    private void checkTooSoon() {
-        if (cells == null) {
-            throw new IllegalStateException("You called this too soon");
-        }
+        return true;
     }
 
     @Override

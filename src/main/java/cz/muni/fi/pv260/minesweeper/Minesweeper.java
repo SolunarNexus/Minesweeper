@@ -13,15 +13,58 @@ public final class Minesweeper {
             ╚═╝░░░░░╚═╝╚═╝╚═╝░░╚══╝╚══════╝╚═════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝╚═╝░░░░░╚══════╝╚═╝░░╚═╝
             """;
 
-    static Board board;
+    public static final String USAGE = """
+            Supported commands:
+            r[eveal] <row> <column> - reveals cell
+            d[ebug] - prints debug output
+            export - exports current board
+            import <base64-encoded board> - imports new board
+            exit | quit - exits the game
+            """;
+
+    Board board;
+    SystemWrapper systemWrapper;
+    Scanner scanner;
+    boolean isGameFinished = false;
+    boolean isBoardInitialized = false;
+    GameConfiguration configuration;
 
     public static void main(String[] args) {
-        System.out.println(LOGO);
-        board = new Board(5, 10, 10);
-        Scanner scanner = new Scanner(System.in);
+        var minesweeper = new Minesweeper(new SystemWrapper(), args);
+        minesweeper.runGame();
+    }
 
+    public Minesweeper(SystemWrapper systemWrapper, String[] args) {
+        this.systemWrapper = systemWrapper;
+        configuration = ArgumentParser.parseGameConfiguration(args);
+        String errorMessage = validateConfiguration();
+        if (errorMessage != null) {
+            System.err.println(errorMessage);
+            systemWrapper.exit(100);
+            return;
+        }
+        this.board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), 0, 0);
+        System.out.println(LOGO);
+    }
+
+    private String validateConfiguration() {
+        var rows = configuration.getRows();
+        var cols = configuration.getCols();
+        var mines = configuration.getMines();
+        if (rows * cols <= mines) {
+            return "Invalid configuration: number of mines is greater or equal to number of cells";
+        }
+
+        if (rows < 3 || cols < 3 || rows > 99 || cols > 99 || mines < 1) {
+            return "Invalid configuration: rows and cols must be between 3 and 99 and mines must be greater than 0";
+        }
+        return null;
+    }
+
+    void runGame() {
+        scanner = new Scanner(System.in);
         doPrintBoard();
-        while (true) {
+        while (!isGameFinished) {
             System.out.print(">>> ");
             var inputLine = scanner.nextLine();
             if (inputLine.isBlank())
@@ -32,76 +75,125 @@ public final class Minesweeper {
                 continue;
             }
 
-            if (parts.length == 1) {
-                if ("exit".equalsIgnoreCase(parts[0])) {
-                    doExit();
-                } else if ("quit".equalsIgnoreCase(parts[0])) {
-                    doExit();
-                } else if ("debug".equalsIgnoreCase(parts[0]) || "d".equalsIgnoreCase(parts[0])) {
-                    doDebug(board);
-                } else if ("export".equalsIgnoreCase(parts[0])) {
-                    doExport();
-                }
-            } else if (parts.length == 2) {
-                if ("import".equalsIgnoreCase(parts[0])) {
-                    doImport(parts[1]);
-                }
-            } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
-                if (!doReveal(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))) {
-                    handle_MINE(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
-                }
-                if (board.isCleared()) {
-                    doWon();
-                }
-            } else {
-                handle_ERROR("Invalid command: " + inputLine);
-            }
+            handleCommand(parts);
         }
     }
 
-    private static void doExport() {
+    private void handleCommand(String[] parts) {
+        switch (parts[0].toLowerCase()) {
+            case "exit", "quit":
+                handleExitCommand();
+                break;
+            case "debug", "d":
+                handleDebugCommand();
+                break;
+            case "export":
+                handleExportCommand();
+                break;
+            case "import":
+                handleImportCommand(parts);
+                break;
+            case "reveal", "r":
+                handleRevealCommand(parts);
+                break;
+            default:
+                handleInvalidCommand("Unknown command");
+        }
+    }
+
+    private void handleExportCommand() {
+        if (!isBoardInitialized) {
+            System.out.println("Board is not initialized.");
+            return;
+        }
         System.out.println(board.exportBoard());
     }
 
-    private static void doImport(String content) {
-        board = Board.importBoard(content);
-        System.out.println("Board imported!");
-        doPrintBoard();
+    private void handleImportCommand(String[] parts) {
+        if (parts.length != 2) {
+            handleInvalidCommand("Expected base64-encoded board");
+            return;
+        }
+        System.out.println("Are you sure you want to import a replace current board? (Y/n)");
+        if (scanner.nextLine().equals("Y")) {
+            Board importedBoard = Board.importBoard(parts[1]);
+            if (importedBoard == null) {
+                System.out.println("Invalid board import");
+                return;
+            }
+            board = importedBoard;
+            System.out.println("Board imported!");
+            doPrintBoard();
+        } else {
+            System.out.println("Board import discarded");
+        }
     }
 
-    private static void doWon() {
+    private void doWon() {
         System.out.println("You won!");
-        System.exit(0);
+        isGameFinished = true;
+        systemWrapper.exit(0);
     }
 
-    private static void doPrintBoard() {
+    private void doPrintBoard() {
         board.print(System.out);
     }
 
-    private static boolean doReveal(int fst, int snd) {
-        boolean result = board.reveal(fst, snd);
-        doPrintBoard();
-        return result;
+    private void handleRevealCommand(String[] parts) {
+        if (parts.length != 3) {
+            handleInvalidCommand("Expected row and column coordinates");
+            return;
+        }
+        try {
+            int row = Integer.parseInt(parts[1]);
+            int column = Integer.parseInt(parts[2]);
+
+            if (!board.isInBounds(row, column)) {
+                handleInvalidCommand("Row or column out of bounds");
+                return;
+            }
+            if (!isBoardInitialized) {
+                board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), row, column);
+                isBoardInitialized = true;
+            }
+            boolean result = board.reveal(row, column);
+            doPrintBoard();
+            if (!result) {
+                handleMine(row, column);
+            }
+
+            if (board.isCleared()) {
+                doWon();
+            }
+        } catch (NumberFormatException e) {
+            handleInvalidCommand("Expected numbers for row and column");
+        }
     }
 
-    private static void doDebug(Board board) {
+    private void handleDebugCommand() {
         System.out.println("Debug output: \n");
         System.out.println(board.toString());
     }
 
-    private static void doExit() {
+    private void handleExitCommand() {
         System.out.println("You have called exit - defeat");
-        System.exit(10);
+        isGameFinished = true;
+        systemWrapper.exit(10);
     }
 
-    private static void handle_MINE(int fst, int snd) {
-        System.out.printf("Found mine @ coordinates [%d, %d]\n", fst, snd);
+    private void handleMine(int row, int column) {
+        System.out.printf("Found mine @ coordinates [%d, %d]\n", row, column);
         System.out.println("\n*** You lost!***\n");
-        System.exit(1);
+        isGameFinished = true;
+        systemWrapper.exit(1);
     }
 
-    private static void handle_ERROR(String err) {
-        System.err.println("Error - " + err);
-        System.exit(100);
+    private void handleInvalidCommand(String message) {
+        System.out.println("Invalid command: " + message);
+        doPrintUsage();
+    }
+
+    private void doPrintUsage() {
+        System.out.println(USAGE);
     }
 }
