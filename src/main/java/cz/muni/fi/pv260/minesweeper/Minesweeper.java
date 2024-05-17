@@ -53,11 +53,11 @@ public final class Minesweeper {
                 continue;
             }
 
-            doOneStep(parts);
+            handleCommand(parts);
         }
     }
 
-    private void doOneStep(String[] parts) {
+    private void handleCommand(String[] parts) {
         if (parts.length == 1) {
             if ("exit".equalsIgnoreCase(parts[0])) {
                 doExit();
