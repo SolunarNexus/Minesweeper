@@ -241,8 +241,9 @@ class MinesweeperTest {
             "long invalid command,Unknown command",
             "super long invalid command,Unknown command",
             "r x 1,Expected numbers for row and column",
+            "reveal 1 1 command,Expected row and column coordinates",
+            "import xx command,Expected base64-encoded board",
     })
-
     void errorCommand(String command, String messageExpected) {
         System.setIn(new ByteArrayInputStream((command + "\nexit").getBytes()));
 

@@ -72,7 +72,7 @@ public final class Minesweeper {
                 if (parts.length == 2) {
                     handleImportCommand(parts[1]);
                 } else {
-                    handleInvalidCommand("Unknown command");
+                    handleInvalidCommand("Expected base64-encoded board");
                 }
                 break;
             case "reveal", "r":
@@ -85,7 +85,7 @@ public final class Minesweeper {
                         handleInvalidCommand("Expected numbers for row and column");
                     }
                 } else {
-                    handleInvalidCommand("Unknown command");
+                    handleInvalidCommand("Expected row and column coordinates");
                 }
                 break;
             default:
