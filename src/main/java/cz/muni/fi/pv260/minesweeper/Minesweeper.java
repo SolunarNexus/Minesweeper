@@ -69,11 +69,7 @@ public final class Minesweeper {
                 handleExportCommand();
                 break;
             case "import":
-                if (parts.length == 2) {
-                    handleImportCommand(parts[1]);
-                } else {
-                    handleInvalidCommand("Expected base64-encoded board");
-                }
+                handleImportCommand(parts);
                 break;
             case "reveal", "r":
                 handleRevealCommand(parts);
@@ -87,10 +83,14 @@ public final class Minesweeper {
         System.out.println(board.exportBoard());
     }
 
-    private void handleImportCommand(String content) {
+    private void handleImportCommand(String[] parts) {
+        if (parts.length != 2) {
+            handleInvalidCommand("Expected base64-encoded board");
+            return;
+        }
         System.out.println("Are you sure you want to import a replace current board? (Y/n)");
         if (scanner.nextLine().equals("Y")) {
-            board = Board.importBoard(content);
+            board = Board.importBoard(parts[1]);
             System.out.println("Board imported!");
             doPrintBoard();
         } else {
@@ -108,7 +108,7 @@ public final class Minesweeper {
         board.print(System.out);
     }
 
-    private void handleRevealCommand(String parts[]) {
+    private void handleRevealCommand(String[] parts) {
         if (parts.length != 3) {
             handleInvalidCommand("Expected row and column coordinates");
             return;
