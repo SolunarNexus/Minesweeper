@@ -2,6 +2,8 @@ package cz.muni.fi.pv260.minesweeper;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 final class BoardTest {
 
     @Test
@@ -238,5 +240,11 @@ final class BoardTest {
                             """
             );
         }
+    }
+
+    @Test
+    void boardImportInvalid() {
+        Board board = Board.importBoard("MTAsMTAKMTUsMg");
+        assertThat(board).isNull();
     }
 }

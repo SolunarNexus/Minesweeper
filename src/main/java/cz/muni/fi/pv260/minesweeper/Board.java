@@ -2,11 +2,7 @@ package cz.muni.fi.pv260.minesweeper;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.random.RandomGenerator;
 
 public class Board {
@@ -35,8 +31,6 @@ public class Board {
     }
 
     Board(int rows, int cols, Collection<BoardCell> cells) {
-        if (rows * cols != cells.size())
-            throw new IllegalArgumentException("Oops something went wrong");
 
         this.rows = rows;
         this.cols = cols;
@@ -68,8 +62,18 @@ public class Board {
 
         for (int i = 1; i < content.length; i++) {
             var rowColStr = content[i].split(",");
-            int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
-            cells.get(row * cols + col).value = 'M';
+            try {
+                int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
+                if (row >= rows || col >= cols) {
+                    return null;
+                }
+                if (row < 0 || col < 0) {
+                    return null;
+                }
+                cells.get(row * cols + col).value = 'M';
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
 
         return new Board(rows, cols, cells);

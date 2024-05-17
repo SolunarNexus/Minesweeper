@@ -168,6 +168,28 @@ class MinesweeperTest {
     }
 
     @Test
+    void doImportInvalid() {
+        String input = """
+                import MTAsMTAKMTUsMg
+                Y
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        minesweeper.runGame();
+
+        verify(board).print(out);
+        verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).print(">>> ");
+        verify(out).println("Are you sure you want to import a replace current board? (Y/n)");
+        verify(out).println("Invalid board import");
+        assertThat(minesweeper.board).isEqualTo(board);
+        verifyNoMoreInteractions(board, err);
+
+        verify(wrapper).exit(10);
+    }
+
+    @Test
     void doImportDiscard() {
         String input = """
                 import NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK
