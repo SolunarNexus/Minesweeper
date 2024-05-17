@@ -72,7 +72,7 @@ public final class Minesweeper {
                 if (parts.length == 2) {
                     handleImportCommand(parts[1]);
                 } else {
-                    handleInvalidCommand("Expected base64-encoded board");
+                    handleInvalidCommand("Unknown command");
                 }
                 break;
             case "reveal", "r":
