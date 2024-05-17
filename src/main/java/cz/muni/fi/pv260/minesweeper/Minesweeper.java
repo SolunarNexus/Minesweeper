@@ -84,9 +84,7 @@ public final class Minesweeper {
                     handleInvalidCommand("Row or column out of bounds");
                     return;
                 }
-                if (!doReveal(row, column)) {
-                    handleMine(row, column);
-                }
+                doReveal(row, column);
             } catch (NumberFormatException e) {
                 handleInvalidCommand("Expected numbers for row and column");
                 return;
@@ -124,10 +122,12 @@ public final class Minesweeper {
         board.print(System.out);
     }
 
-    private boolean doReveal(int row, int column) {
+    private void doReveal(int row, int column) {
         boolean result = board.reveal(row, column);
         doPrintBoard();
-        return result;
+        if (!result){
+            handleMine(row, column);
+        }
     }
 
     private void doDebug(Board board) {
