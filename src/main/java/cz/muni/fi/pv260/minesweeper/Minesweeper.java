@@ -58,34 +58,38 @@ public final class Minesweeper {
     }
 
     private void handleCommand(String[] parts) {
-        if (parts.length == 1) {
-            if ("exit".equalsIgnoreCase(parts[0])) {
+        switch (parts[0].toLowerCase()) {
+            case "exit", "quit":
                 doExit();
-            } else if ("quit".equalsIgnoreCase(parts[0])) {
-                doExit();
-            } else if ("debug".equalsIgnoreCase(parts[0]) || "d".equalsIgnoreCase(parts[0])) {
+                break;
+            case "debug", "d":
                 doDebug(board);
-            } else if ("export".equalsIgnoreCase(parts[0])) {
+                break;
+            case "export":
                 doExport();
-            } else {
+                break;
+            case "import":
+                if (parts.length == 2) {
+                    doImport(parts[1]);
+                } else {
+                    handleInvalidCommand("Expected base64-encoded board");
+                }
+                break;
+            case "reveal", "r":
+                if (parts.length == 3) {
+                    try {
+                        int row = Integer.parseInt(parts[1]);
+                        int column = Integer.parseInt(parts[2]);
+                        doReveal(row, column);
+                    } catch (NumberFormatException e) {
+                        handleInvalidCommand("Expected numbers for row and column");
+                    }
+                } else {
+                    handleInvalidCommand("Unknown command");
+                }
+                break;
+            default:
                 handleInvalidCommand("Unknown command");
-            }
-        } else if (parts.length == 2) {
-            if ("import".equalsIgnoreCase(parts[0])) {
-                doImport(parts[1]);
-            } else {
-                handleInvalidCommand("Unknown command");
-            }
-        } else if (parts.length == 3 && "reveal".equalsIgnoreCase(parts[0]) || "r".equalsIgnoreCase(parts[0])) {
-            try {
-                int row = Integer.parseInt(parts[1]);
-                int column = Integer.parseInt(parts[2]);
-                doReveal(row, column);
-            } catch (NumberFormatException e) {
-                handleInvalidCommand("Expected numbers for row and column");
-            }
-        } else {
-            handleInvalidCommand("Unknown command");
         }
     }
 
@@ -121,7 +125,7 @@ public final class Minesweeper {
         }
         boolean result = board.reveal(row, column);
         doPrintBoard();
-        if (!result){
+        if (!result) {
             handleMine(row, column);
         }
 
