@@ -37,8 +37,28 @@ public final class Minesweeper {
     public Minesweeper(SystemWrapper systemWrapper, String[] args) {
         this.systemWrapper = systemWrapper;
         configuration = ArgumentParser.parseGameConfiguration(args);
+        String errorMessage = validateConfiguration();
+        if (errorMessage != null) {
+            System.err.println(errorMessage);
+            systemWrapper.exit(100);
+            return;
+        }
         this.board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), 0, 0);
         System.out.println(LOGO);
+    }
+
+    private String validateConfiguration() {
+        var rows = configuration.getRows();
+        var cols = configuration.getCols();
+        var mines = configuration.getMines();
+        if (rows * cols <= mines) {
+            return "Invalid configuration: number of mines is greater or equal to number of cells";
+        }
+
+        if (rows < 3 || cols < 3 || rows > 99 || cols > 99 || mines < 1) {
+            return "Invalid configuration: rows and cols must be between 3 and 99 and mines must be greater than 0";
+        }
+        return null;
     }
 
     void runGame() {

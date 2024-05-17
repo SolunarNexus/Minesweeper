@@ -27,13 +27,6 @@ public class Board {
     Long seed;
 
     Board(int rows, int cols, int mines, Long seed, int selectedRow, int selectedCol) {
-        if (rows * cols <= mines)
-            throw new IllegalArgumentException("Oops something went wrong");
-
-
-        if (rows < 3 || cols < 3 || rows > 99 || cols > 99 || mines < 1)
-            throw new IllegalArgumentException("Error");
-
         this.seed = seed;
         this.rows = rows;
         this.cols = cols;

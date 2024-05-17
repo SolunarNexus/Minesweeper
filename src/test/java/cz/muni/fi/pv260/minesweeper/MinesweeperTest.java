@@ -301,4 +301,15 @@ class MinesweeperTest {
 
         verify(wrapper).exit(10);
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1,4,0,Invalid configuration: rows and cols must be between 3 and 99 and mines must be greater than 0",
+            "5,5,26,Invalid configuration: number of mines is greater or equal to number of cells",
+    })
+    public void testInvalidConfiguration(String rows, String cols, String mines, String error) {
+        new Minesweeper(wrapper, new String[]{"--rows", rows, "--cols", cols, "--mines", mines});
+        verify(err).println(error);
+        verify(wrapper).exit(100);
+    }
 }
