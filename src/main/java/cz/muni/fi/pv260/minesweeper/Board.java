@@ -63,36 +63,38 @@ public class Board {
         for (int i = 1; i < content.length; i++) {
             if (!content[i].startsWith("R")) {
                 var rowColStr = content[i].split(",");
-                try {
-                    int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
-                    if (row >= rows || col >= cols) {
-                        return null;
-                    }
-                    if (row < 0 || col < 0) {
-                        return null;
-                    }
+                Integer row = parseCoordinate(rowColStr[0], rows);
+                Integer col = parseCoordinate(rowColStr[1], cols);
+                if (row != null && col != null) {
                     cells.get(row * cols + col).value = 'M';
-                } catch (NumberFormatException e) {
+                } else {
                     return null;
                 }
             } else {
                 var rowColStr = content[i].substring(1).split(",");
-                try {
-                    int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
-                    if (row >= rows || col >= cols) {
-                        return null;
-                    }
-                    if (row < 0 || col < 0) {
-                        return null;
-                    }
+                Integer row = parseCoordinate(rowColStr[0], rows);
+                Integer col = parseCoordinate(rowColStr[1], cols);
+                if (row != null && col != null) {
                     cells.get(row * cols + col).isRevealed = true;
-                } catch (NumberFormatException e) {
+                } else {
                     return null;
                 }
             }
         }
 
         return new Board(rows, cols, cells);
+    }
+
+    private static Integer parseCoordinate(String text, int max) {
+        try {
+            int value = Integer.parseInt(text);
+            if (value < 0 || value >= max) {
+                return null;
+            }
+            return value;
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public BoardCell getCell(int r, int c) {
