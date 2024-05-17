@@ -189,7 +189,7 @@ final class BoardTest {
 
     @Test
     void createBoardWithSeed_shouldGenerateTheSameGame() {
-        Board board = new Board(5, 5, 5, 1234L);
+        Board board = new Board(5, 5, 5, 1234L, 0, 0);
 
         try (var softly = new BoardSoftAssertions(board)) {
             board.reveal(0, 0);

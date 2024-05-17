@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class MinesweeperTest {
@@ -38,6 +39,7 @@ class MinesweeperTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         when(board.reveal(1, 2)).thenReturn(true);
         when(board.isInBounds(1, 2)).thenReturn(true);
+        minesweeper.isBoardInitialized = true;
 
         minesweeper.runGame();
 
@@ -57,6 +59,21 @@ class MinesweeperTest {
     }
 
     @Test
+    void testRevealCommandNotInitialized() {
+        String input = """
+                reveal 1 2
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.reveal(1, 2)).thenReturn(true);
+        when(board.isInBounds(1, 2)).thenReturn(true);
+
+        minesweeper.runGame();
+
+        assertThat(minesweeper.isBoardInitialized).isTrue();
+    }
+
+    @Test
     void doReveal_mine() {
         String input = """
                 reveal 1 2
@@ -64,6 +81,7 @@ class MinesweeperTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         when(board.reveal(1, 2)).thenReturn(false);
         when(board.isInBounds(1, 2)).thenReturn(true);
+        minesweeper.isBoardInitialized = true;
 
         minesweeper.runGame();
 
@@ -92,6 +110,7 @@ class MinesweeperTest {
         when(board.reveal(1, 2)).thenReturn(true);
         when(board.isCleared()).thenReturn(true);
         when(board.isInBounds(1, 2)).thenReturn(true);
+        minesweeper.isBoardInitialized = true;
 
         minesweeper.runGame();
 
@@ -171,13 +190,14 @@ class MinesweeperTest {
     }
 
     @Test
-    void doExport() {
+    void doExportInitialized() {
         String input = """
                 export
                 exit
                 """;
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         when(board.exportBoard()).thenReturn("EXPORT");
+        minesweeper.isBoardInitialized = true;
 
         minesweeper.runGame();
 
@@ -186,6 +206,28 @@ class MinesweeperTest {
         verify(out).println(Minesweeper.LOGO);
         verify(out, times(2)).print(">>> ");
         verify(out).println("EXPORT");
+        verify(out).println("You have called exit - defeat");
+        verifyNoMoreInteractions(board, out, err);
+
+        verify(wrapper).exit(10);
+    }
+
+    @Test
+    void doExportNotInitialized() {
+        String input = """
+                export
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.exportBoard()).thenReturn("EXPORT");
+        minesweeper.isBoardInitialized = false;
+
+        minesweeper.runGame();
+
+        verify(board).print(out);
+        verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).print(">>> ");
+        verify(out).println("Board is not initialized.");
         verify(out).println("You have called exit - defeat");
         verifyNoMoreInteractions(board, out, err);
 

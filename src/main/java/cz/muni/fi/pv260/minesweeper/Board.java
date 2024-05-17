@@ -26,7 +26,7 @@ public class Board {
     List<BoardCell> cells = null;
     Long seed;
 
-    Board(int rows, int cols, int mines, Long seed) {
+    Board(int rows, int cols, int mines, Long seed, int selectedRow, int selectedCol) {
         if (rows * cols <= mines)
             throw new IllegalArgumentException("Oops something went wrong");
 
@@ -38,6 +38,7 @@ public class Board {
         this.rows = rows;
         this.cols = cols;
         this.mines = mines;
+        generateRandomBoard(selectedRow, selectedCol);
     }
 
     Board(int rows, int cols, Collection<BoardCell> cells) {
@@ -82,7 +83,6 @@ public class Board {
     }
 
     public BoardCell getCell(int r, int c) {
-        checkTooSoon();
         return cells.get(r * this.cols + c);
     }
 
@@ -116,8 +116,6 @@ public class Board {
     }
 
     public boolean isCleared() {
-        checkTooSoon();
-
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 var cell = getCell(r, c);
@@ -153,8 +151,6 @@ public class Board {
     }
 
     public String exportBoard() {
-        checkTooSoon();
-
         StringBuffer sb = new StringBuffer();
         sb.append(String.format("%d,%d\n", rows, cols));
         for (int r = 0; r < rows; r++)
@@ -230,12 +226,6 @@ public class Board {
             return false;
         }
         return true;
-    }
-
-    private void checkTooSoon() {
-        if (cells == null) {
-            throw new IllegalStateException("You called this too soon");
-        }
     }
 
     @Override

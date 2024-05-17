@@ -26,6 +26,8 @@ public final class Minesweeper {
     SystemWrapper systemWrapper;
     Scanner scanner;
     boolean isGameFinished = false;
+    boolean isBoardInitialized = false;
+    GameConfiguration configuration;
 
     public static void main(String[] args) {
         var minesweeper = new Minesweeper(new SystemWrapper(), args);
@@ -34,8 +36,8 @@ public final class Minesweeper {
 
     public Minesweeper(SystemWrapper systemWrapper, String[] args) {
         this.systemWrapper = systemWrapper;
-        GameConfiguration configuration = ArgumentParser.parseGameConfiguration(args);
-        this.board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed());
+        configuration = ArgumentParser.parseGameConfiguration(args);
+        this.board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), 0, 0);
         System.out.println(LOGO);
     }
 
@@ -80,6 +82,10 @@ public final class Minesweeper {
     }
 
     private void handleExportCommand() {
+        if (!isBoardInitialized) {
+            System.out.println("Board is not initialized.");
+            return;
+        }
         System.out.println(board.exportBoard());
     }
 
@@ -120,6 +126,10 @@ public final class Minesweeper {
             if (!board.isInBounds(row, column)) {
                 handleInvalidCommand("Row or column out of bounds");
                 return;
+            }
+            if (!isBoardInitialized) {
+                board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), row, column);
+                isBoardInitialized = true;
             }
             boolean result = board.reveal(row, column);
             doPrintBoard();
