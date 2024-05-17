@@ -28,15 +28,15 @@ public final class Minesweeper {
     boolean isGameFinished = false;
 
     public static void main(String[] args) {
-        GameConfiguration configuration = ArgumentParser.parseGameConfiguration(args);
-        Minesweeper minesweeper = new Minesweeper(new SystemWrapper(), configuration);
+        var minesweeper = new Minesweeper(new SystemWrapper(), args);
         minesweeper.runGame();
     }
 
-    public Minesweeper(SystemWrapper systemWrapper, GameConfiguration gameConfiguration) {
+    public Minesweeper(SystemWrapper systemWrapper, String[] args) {
         this.systemWrapper = systemWrapper;
+        GameConfiguration configuration = ArgumentParser.parseGameConfiguration(args);
+        this.board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed());
         System.out.println(LOGO);
-        board = new Board(gameConfiguration.getRows(), gameConfiguration.getCols(), gameConfiguration.getMines(), gameConfiguration.getSeed());
     }
 
     void runGame() {

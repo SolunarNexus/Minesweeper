@@ -27,7 +27,7 @@ class MinesweeperTest {
         board = mock(Board.class);
         System.setOut(out);
         System.setErr(err);
-        minesweeper = new Minesweeper(wrapper, new GameConfiguration());
+        minesweeper = new Minesweeper(wrapper, new String[]{});
         minesweeper.board = board;
     }
 
