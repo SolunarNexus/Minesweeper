@@ -60,17 +60,17 @@ public final class Minesweeper {
     private void handleCommand(String[] parts) {
         switch (parts[0].toLowerCase()) {
             case "exit", "quit":
-                doExit();
+                handleExitCommand();
                 break;
             case "debug", "d":
-                doDebug(board);
+                handleDebugCommand();
                 break;
             case "export":
-                doExport();
+                handleExportCommand();
                 break;
             case "import":
                 if (parts.length == 2) {
-                    doImport(parts[1]);
+                    handleImportCommand(parts[1]);
                 } else {
                     handleInvalidCommand("Expected base64-encoded board");
                 }
@@ -80,7 +80,7 @@ public final class Minesweeper {
                     try {
                         int row = Integer.parseInt(parts[1]);
                         int column = Integer.parseInt(parts[2]);
-                        doReveal(row, column);
+                        handleRevealCommand(row, column);
                     } catch (NumberFormatException e) {
                         handleInvalidCommand("Expected numbers for row and column");
                     }
@@ -93,11 +93,11 @@ public final class Minesweeper {
         }
     }
 
-    private void doExport() {
+    private void handleExportCommand() {
         System.out.println(board.exportBoard());
     }
 
-    private void doImport(String content) {
+    private void handleImportCommand(String content) {
         System.out.println("Are you sure you want to import a replace current board? (Y/n)");
         if (scanner.nextLine().equals("Y")) {
             board = Board.importBoard(content);
@@ -118,7 +118,7 @@ public final class Minesweeper {
         board.print(System.out);
     }
 
-    private void doReveal(int row, int column) {
+    private void handleRevealCommand(int row, int column) {
         if (!board.isInBounds(row, column)) {
             handleInvalidCommand("Row or column out of bounds");
             return;
@@ -134,12 +134,12 @@ public final class Minesweeper {
         }
     }
 
-    private void doDebug(Board board) {
+    private void handleDebugCommand() {
         System.out.println("Debug output: \n");
         System.out.println(board.toString());
     }
 
-    private void doExit() {
+    private void handleExitCommand() {
         System.out.println("You have called exit - defeat");
         isGameFinished = true;
         systemWrapper.exit(10);
