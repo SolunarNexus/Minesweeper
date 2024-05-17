@@ -37,9 +37,11 @@ class MinesweeperTest {
         String input = command + "\nexit";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         when(board.reveal(1, 2)).thenReturn(true);
+        when(board.isInBounds(1, 2)).thenReturn(true);
 
         minesweeper.runGame();
 
+        verify(board).isInBounds(1, 2);
         verify(board).reveal(1, 2);
         verify(board, times(2)).print(out);
         verify(board).isCleared();
@@ -61,9 +63,11 @@ class MinesweeperTest {
                 """;
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         when(board.reveal(1, 2)).thenReturn(false);
+        when(board.isInBounds(1, 2)).thenReturn(true);
 
         minesweeper.runGame();
 
+        verify(board).isInBounds(1, 2);
         verify(board).reveal(1, 2);
         verify(board, times(2)).print(out);
         verify(board).isCleared();
@@ -87,9 +91,11 @@ class MinesweeperTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         when(board.reveal(1, 2)).thenReturn(true);
         when(board.isCleared()).thenReturn(true);
+        when(board.isInBounds(1, 2)).thenReturn(true);
 
         minesweeper.runGame();
 
+        verify(board).isInBounds(1, 2);
         verify(board).reveal(1, 2);
         verify(board, times(2)).print(out);
         verify(board).isCleared();
@@ -212,12 +218,12 @@ class MinesweeperTest {
                 exit
                 """;
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-        when(board.reveal(1, 100)).thenThrow(new IndexOutOfBoundsException(100));
+        when(board.isInBounds(1, 2)).thenReturn(false);
 
         minesweeper.runGame();
 
         verify(board).print(out);
-        verify(board).reveal(1, 100);
+        verify(board).isInBounds(1, 100);
         verify(out).println(Minesweeper.LOGO);
         verify(out, times(2)).print(">>> ");
         verify(out).println("Invalid command: Row or column out of bounds");

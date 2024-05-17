@@ -80,14 +80,15 @@ public final class Minesweeper {
             try {
                 int row = Integer.parseInt(parts[1]);
                 int column = Integer.parseInt(parts[2]);
+                if (!board.isInBounds(row, column)) {
+                    handleInvalidCommand("Row or column out of bounds");
+                    return;
+                }
                 if (!doReveal(row, column)) {
                     handleMine(row, column);
                 }
             } catch (NumberFormatException e) {
                 handleInvalidCommand("Expected numbers for row and column");
-                return;
-            } catch (IndexOutOfBoundsException e) {
-                handleInvalidCommand("Row or column out of bounds");
                 return;
             }
             if (board.isCleared()) {

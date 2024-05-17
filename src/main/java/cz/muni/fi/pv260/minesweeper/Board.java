@@ -87,7 +87,6 @@ public class Board {
     }
 
     public boolean reveal(int row, int col) {
-        checkBounds(row, col);
 
         if (cells == null) {
             generateRandomBoard(row, col);
@@ -234,7 +233,7 @@ public class Board {
         }
     }
 
-    private boolean isInBounds(int row, int col) {
+    boolean isInBounds(int row, int col) {
         try {
             checkBounds(row, col);
             return true;
