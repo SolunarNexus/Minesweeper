@@ -61,18 +61,34 @@ public class Board {
         }
 
         for (int i = 1; i < content.length; i++) {
-            var rowColStr = content[i].split(",");
-            try {
-                int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
-                if (row >= rows || col >= cols) {
+            if (!content[i].startsWith("R")) {
+                var rowColStr = content[i].split(",");
+                try {
+                    int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
+                    if (row >= rows || col >= cols) {
+                        return null;
+                    }
+                    if (row < 0 || col < 0) {
+                        return null;
+                    }
+                    cells.get(row * cols + col).value = 'M';
+                } catch (NumberFormatException e) {
                     return null;
                 }
-                if (row < 0 || col < 0) {
+            } else {
+                var rowColStr = content[i].substring(1).split(",");
+                try {
+                    int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
+                    if (row >= rows || col >= cols) {
+                        return null;
+                    }
+                    if (row < 0 || col < 0) {
+                        return null;
+                    }
+                    cells.get(row * cols + col).isRevealed = true;
+                } catch (NumberFormatException e) {
                     return null;
                 }
-                cells.get(row * cols + col).value = 'M';
-            } catch (NumberFormatException e) {
-                return null;
             }
         }
 
@@ -154,6 +170,11 @@ public class Board {
             for (int c = 0; c < cols; c++)
                 if (getCell(r, c).value == 'M')
                     sb.append(String.format("%d,%d\n", r, c));
+
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++)
+                if (getCell(r, c).isRevealed)
+                    sb.append(String.format("R%d,%d\n", r, c));
 
         return Base64
                 .getEncoder()

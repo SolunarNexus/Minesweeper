@@ -247,4 +247,38 @@ final class BoardTest {
         Board board = Board.importBoard("MTAsMTAKMTUsMg");
         assertThat(board).isNull();
     }
+
+    @Test
+    void boardExport() {
+        Board board = new Board(5, 10, 10, 1234L, 0, 0);
+        board.reveal(0, 0);
+        String export = board.exportBoard();
+        assertThat(export).isEqualTo("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
+    }
+
+    @Test
+    void boardImportWithRevealed() {
+        Board board = Board.importBoard("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.assertBoardValues(
+                    """
+                            01MM1001M1
+                            0122112321
+                            111111MM10
+                            M11M233321
+                            1112M2M11M
+                            """
+            );
+            softly.assertBoardRevealed(
+                    """
+                            ..XXXXXXXX
+                            ..XXXXXXXX
+                            ..XXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            """
+            );
+        }
+    }
 }
