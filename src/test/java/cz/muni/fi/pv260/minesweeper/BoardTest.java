@@ -2,6 +2,8 @@ package cz.muni.fi.pv260.minesweeper;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 final class BoardTest {
@@ -218,9 +220,11 @@ final class BoardTest {
 
     @Test
     void boardImport() {
-        Board board = Board.importBoard("NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK");
+        Optional<Board> board = Board.importBoard("NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK");
 
-        try (var softly = new BoardSoftAssertions(board)) {
+        assertThat(board).isPresent();
+
+        try (var softly = new BoardSoftAssertions(board.get())) {
             softly.assertBoardValues(
                     """
                             011113MM10
@@ -244,8 +248,8 @@ final class BoardTest {
 
     @Test
     void boardImportInvalid() {
-        Board board = Board.importBoard("MTAsMTAKMTUsMg");
-        assertThat(board).isNull();
+        Optional<Board> board = Board.importBoard("MTAsMTAKMTUsMg");
+        assertThat(board).isEmpty();
     }
 
     @Test
@@ -258,9 +262,10 @@ final class BoardTest {
 
     @Test
     void boardImportWithRevealed() {
-        Board board = Board.importBoard("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
+        Optional<Board> board = Board.importBoard("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
 
-        try (var softly = new BoardSoftAssertions(board)) {
+        assertThat(board).isPresent();
+        try (var softly = new BoardSoftAssertions(board.get())) {
             softly.assertBoardValues(
                     """
                             01MM1001M1

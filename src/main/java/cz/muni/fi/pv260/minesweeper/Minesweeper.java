@@ -1,5 +1,6 @@
 package cz.muni.fi.pv260.minesweeper;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 public final class Minesweeper {
@@ -116,12 +117,12 @@ public final class Minesweeper {
         }
         System.out.println("Are you sure you want to import a replace current board? (Y/n)");
         if (scanner.nextLine().equals("Y")) {
-            Board importedBoard = Board.importBoard(parts[1]);
-            if (importedBoard == null) {
+            Optional<Board> importedBoard = Board.importBoard(parts[1]);
+            if (importedBoard.isEmpty()) {
                 System.out.println("Invalid board import");
                 return;
             }
-            board = importedBoard;
+            board = importedBoard.get();
             System.out.println("Board imported!");
             doPrintBoard();
         } else {

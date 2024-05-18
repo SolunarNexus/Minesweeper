@@ -48,7 +48,7 @@ public class Board {
         }
     }
 
-    public static Board importBoard(String base64content) {
+    public static Optional<Board> importBoard(String base64content) {
         var content = new String(Base64.getDecoder().decode(base64content), StandardCharsets.UTF_8)
                 .split("\n");
         var rowColsStr = content[0].split(",");
@@ -63,37 +63,37 @@ public class Board {
         for (int i = 1; i < content.length; i++) {
             if (!content[i].startsWith("R")) {
                 var rowColStr = content[i].split(",");
-                Integer row = parseCoordinate(rowColStr[0], rows);
-                Integer col = parseCoordinate(rowColStr[1], cols);
-                if (row != null && col != null) {
-                    cells.get(row * cols + col).value = 'M';
+                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
+                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
+                if (row.isPresent() && col.isPresent()) {
+                    cells.get(row.get() * cols + col.get()).value = 'M';
                 } else {
-                    return null;
+                    return Optional.empty();
                 }
             } else {
                 var rowColStr = content[i].substring(1).split(",");
-                Integer row = parseCoordinate(rowColStr[0], rows);
-                Integer col = parseCoordinate(rowColStr[1], cols);
-                if (row != null && col != null) {
-                    cells.get(row * cols + col).isRevealed = true;
+                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
+                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
+                if (row.isPresent() && col.isPresent()) {
+                    cells.get(row.get() * cols + col.get()).isRevealed = true;
                 } else {
-                    return null;
+                    return Optional.empty();
                 }
             }
         }
 
-        return new Board(rows, cols, cells);
+        return Optional.of(new Board(rows, cols, cells));
     }
 
-    private static Integer parseCoordinate(String text, int max) {
+    private static Optional<Integer> parseCoordinate(String text, int max) {
         try {
             int value = Integer.parseInt(text);
             if (value < 0 || value >= max) {
-                return null;
+                return Optional.empty();
             }
-            return value;
+            return Optional.of(value);
         } catch (NumberFormatException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
