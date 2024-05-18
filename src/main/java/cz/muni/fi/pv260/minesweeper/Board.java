@@ -177,6 +177,10 @@ public class Board {
                         out.printf(" %c ", cell.value);
                         continue;
                     }
+                    if (cell.isFlagged){
+                        out.print(" F ");
+                        continue;
+                    }
                 }
                 out.print(" X ");
             }

@@ -74,6 +74,47 @@ class MinesweeperTest {
     }
 
     @Test
+    void testFlagCommandNotInitialized(){
+        String input = """
+                flag 1 2
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.reveal(1, 2)).thenReturn(true);
+        when(board.isInBounds(1, 2)).thenReturn(true);
+
+        minesweeper.runGame();
+
+        assertThat(minesweeper.isBoardInitialized).isTrue();
+    }
+
+    @Test
+    void testFlagCommand(){
+        String input = """
+                flag 1 2
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.flag(1, 2)).thenReturn(true);
+        when(board.isInBounds(1, 2)).thenReturn(true);
+        minesweeper.isBoardInitialized = true;
+
+        minesweeper.runGame();
+
+        verify(board).isInBounds(1, 2);
+        verify(board).flag(1, 2);
+        verify(board, times(2)).print(out);
+        verifyNoMoreInteractions(board);
+
+        verify(wrapper).exit(10);
+
+        verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).print(">>> ");
+        verify(out).println("You have called exit - defeat");
+        verifyNoMoreInteractions(out, err);
+    }
+
+    @Test
     void doReveal_mine() {
         String input = """
                 reveal 1 2
