@@ -61,21 +61,30 @@ public class Board {
         }
 
         for (int i = 1; i < content.length; i++) {
-            if (!content[i].startsWith("R")) {
-                var rowColStr = content[i].split(",");
-                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
-                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
-                if (row.isPresent() && col.isPresent()) {
-                    cells.get(row.get() * cols + col.get()).value = 'M';
-                } else {
-                    return Optional.empty();
-                }
-            } else {
+            if (content[i].startsWith("R")) {
                 var rowColStr = content[i].substring(1).split(",");
                 Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
                 Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
                 if (row.isPresent() && col.isPresent()) {
                     cells.get(row.get() * cols + col.get()).isRevealed = true;
+                } else {
+                    return Optional.empty();
+                }
+            } else if (content[i].startsWith("F")) {
+                var rowColStr = content[i].substring(1).split(",");
+                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
+                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
+                if (row.isPresent() && col.isPresent()) {
+                    cells.get(row.get() * cols + col.get()).isFlagged = true;
+                } else {
+                    return Optional.empty();
+                }
+            } else {
+                var rowColStr = content[i].split(",");
+                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
+                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
+                if (row.isPresent() && col.isPresent()) {
+                    cells.get(row.get() * cols + col.get()).value = 'M';
                 } else {
                     return Optional.empty();
                 }
@@ -191,6 +200,7 @@ public class Board {
     public String exportBoard() {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format("%d,%d\n", rows, cols));
+
         for (int r = 0; r < rows; r++)
             for (int c = 0; c < cols; c++)
                 if (getCell(r, c).value == 'M')
@@ -200,6 +210,11 @@ public class Board {
             for (int c = 0; c < cols; c++)
                 if (getCell(r, c).isRevealed)
                     sb.append(String.format("R%d,%d\n", r, c));
+
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++)
+                if (getCell(r, c).isFlagged)
+                    sb.append(String.format("F%d,%d\n", r, c));
 
         return Base64
                 .getEncoder()

@@ -371,6 +371,16 @@ final class BoardTest {
     }
 
     @Test
+    void boardExportWithFlags(){
+        Board board = new Board(5, 10, 10, 1234L, 0 ,0);
+        board.reveal(0, 0);
+        board.flag(0, 2);
+        board.flag(1, 2);
+        String export = board.exportBoard();
+        assertThat(export).isEqualTo("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEKRjAsMgpGMSwyCg");
+    }
+
+    @Test
     void boardImportWithRevealed() {
         Optional<Board> board = Board.importBoard("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
 
@@ -390,6 +400,34 @@ final class BoardTest {
                             ..XXXXXXXX
                             ..XXXXXXXX
                             ..XXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            """
+            );
+        }
+    }
+
+    @Test
+    void boardImportWithFlags(){
+        Optional<Board> board = Board.importBoard("NSwxMAowLDEKMCw0CjEsMwoxLDYKMiwwCjIsOQozLDAKMyw1CjMsNgo0LDYKUjAsMApSMCw3ClIwLDgKUjAsOQpSMSw3ClIxLDgKUjEsOQpGMCwxCg");
+        assertThat(board).isPresent();
+
+        try (var softly = new BoardSoftAssertions(board.get())) {
+            softly.assertBoardValues(
+                    """
+                            1M22M21100
+                            222M22M111
+                            M21123321M
+                            M2001MM211
+                            110013M200
+                            """
+            );
+
+            softly.assertBoardRevealed(
+                    """
+                            .FXXXXX...
+                            XXXXXXX...
+                            XXXXXXXXXX
                             XXXXXXXXXX
                             XXXXXXXXXX
                             """
