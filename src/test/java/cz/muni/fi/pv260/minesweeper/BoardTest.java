@@ -2,6 +2,8 @@ package cz.muni.fi.pv260.minesweeper;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 final class BoardTest {
@@ -218,9 +220,11 @@ final class BoardTest {
 
     @Test
     void boardImport() {
-        Board board = Board.importBoard("NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK");
+        Optional<Board> board = Board.importBoard("NSwxMAowLDYKMCw3CjEsMgoxLDUKMSw2CjIsMAoyLDMKMiw3CjMsMAozLDIK");
 
-        try (var softly = new BoardSoftAssertions(board)) {
+        assertThat(board).isPresent();
+
+        try (var softly = new BoardSoftAssertions(board.get())) {
             softly.assertBoardValues(
                     """
                             011113MM10
@@ -244,7 +248,42 @@ final class BoardTest {
 
     @Test
     void boardImportInvalid() {
-        Board board = Board.importBoard("MTAsMTAKMTUsMg");
-        assertThat(board).isNull();
+        Optional<Board> board = Board.importBoard("MTAsMTAKMTUsMg");
+        assertThat(board).isEmpty();
+    }
+
+    @Test
+    void boardExport() {
+        Board board = new Board(5, 10, 10, 1234L, 0, 0);
+        board.reveal(0, 0);
+        String export = board.exportBoard();
+        assertThat(export).isEqualTo("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
+    }
+
+    @Test
+    void boardImportWithRevealed() {
+        Optional<Board> board = Board.importBoard("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
+
+        assertThat(board).isPresent();
+        try (var softly = new BoardSoftAssertions(board.get())) {
+            softly.assertBoardValues(
+                    """
+                            01MM1001M1
+                            0122112321
+                            111111MM10
+                            M11M233321
+                            1112M2M11M
+                            """
+            );
+            softly.assertBoardRevealed(
+                    """
+                            ..XXXXXXXX
+                            ..XXXXXXXX
+                            ..XXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            """
+            );
+        }
     }
 }

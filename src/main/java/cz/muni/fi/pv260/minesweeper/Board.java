@@ -48,7 +48,7 @@ public class Board {
         }
     }
 
-    public static Board importBoard(String base64content) {
+    public static Optional<Board> importBoard(String base64content) {
         var content = new String(Base64.getDecoder().decode(base64content), StandardCharsets.UTF_8)
                 .split("\n");
         var rowColsStr = content[0].split(",");
@@ -61,22 +61,40 @@ public class Board {
         }
 
         for (int i = 1; i < content.length; i++) {
-            var rowColStr = content[i].split(",");
-            try {
-                int row = Integer.parseInt(rowColStr[0]), col = Integer.parseInt(rowColStr[1]);
-                if (row >= rows || col >= cols) {
-                    return null;
+            if (!content[i].startsWith("R")) {
+                var rowColStr = content[i].split(",");
+                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
+                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
+                if (row.isPresent() && col.isPresent()) {
+                    cells.get(row.get() * cols + col.get()).value = 'M';
+                } else {
+                    return Optional.empty();
                 }
-                if (row < 0 || col < 0) {
-                    return null;
+            } else {
+                var rowColStr = content[i].substring(1).split(",");
+                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
+                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
+                if (row.isPresent() && col.isPresent()) {
+                    cells.get(row.get() * cols + col.get()).isRevealed = true;
+                } else {
+                    return Optional.empty();
                 }
-                cells.get(row * cols + col).value = 'M';
-            } catch (NumberFormatException e) {
-                return null;
             }
         }
 
-        return new Board(rows, cols, cells);
+        return Optional.of(new Board(rows, cols, cells));
+    }
+
+    private static Optional<Integer> parseCoordinate(String text, int max) {
+        try {
+            int value = Integer.parseInt(text);
+            if (value < 0 || value >= max) {
+                return Optional.empty();
+            }
+            return Optional.of(value);
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 
     public BoardCell getCell(int r, int c) {
@@ -154,6 +172,11 @@ public class Board {
             for (int c = 0; c < cols; c++)
                 if (getCell(r, c).value == 'M')
                     sb.append(String.format("%d,%d\n", r, c));
+
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++)
+                if (getCell(r, c).isRevealed)
+                    sb.append(String.format("R%d,%d\n", r, c));
 
         return Base64
                 .getEncoder()
