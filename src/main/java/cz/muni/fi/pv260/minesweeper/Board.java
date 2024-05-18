@@ -102,12 +102,16 @@ public class Board {
     }
 
     public boolean reveal(int row, int col) {
-
         if (cells == null) {
             generateRandomBoard(row, col);
         }
 
         BoardCell cell = getCell(row, col);
+
+        if (cell.isFlagged){
+            return true;
+        }
+
         cell.isRevealed = true;
 
         if (cell.value == '0') {
@@ -115,6 +119,21 @@ public class Board {
         }
 
         return cell.value != 'M';
+    }
+
+    public boolean flag(int row, int col){
+        if (cells == null){
+            generateRandomBoard(row, col);
+        }
+
+        BoardCell cell = getCell(row, col);
+
+        if (!cell.isRevealed){
+            cell.isFlagged = !cell.isFlagged;
+            return true;
+        }
+
+        return false;
     }
 
     private void floodFill(int row, int col) {

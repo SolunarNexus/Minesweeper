@@ -1,6 +1,7 @@
 package cz.muni.fi.pv260.minesweeper;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.NotExtensible;
 
 import java.util.Optional;
 
@@ -185,6 +186,115 @@ final class BoardTest {
                     ....XXXXX
                     ....XXXXX
                     X...XXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void revealWithFloodFillWithMinesAndFlags(){
+        String board = """
+                XXXXCXXXX
+                XXXXXCXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 0);
+
+            String expectedBoard = """
+                    ....FXXXX
+                    ....XFXXX
+                    X...XXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void flagCell(){
+        String board = """
+                XXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+
+            String expectedBoard = """
+                    FXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void unflagCell(){
+        String board = """
+                OXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+
+            String expectedBoard = """
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void flagRevealedCell(){
+        String board = """
+                ....MXXXX
+                ....XMXXX
+                M...XXXXX
+                XXMXXXMXX
+                """;
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+
+            String expectedBoard = """
+                    ....XXXXX
+                    ....XXXXX
+                    X...XXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void revealFlaggedCell(){
+        String board = """
+                CXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 0);
+
+            String expectedBoard = """
+                    FXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
                     XXXXXXXXX
                     """;
             softly.assertBoardRevealed(expectedBoard);
