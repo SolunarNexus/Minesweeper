@@ -99,33 +99,37 @@ public final class Minesweeper {
                 handleRevealCommand(parts);
                 break;
             case "flag", "f":
-                if (parts.length != 3) {
-                    handleInvalidCommand("Expected row and column coordinates");
-                    return;
-                }
-                try {
-                    int row = Integer.parseInt(parts[1]);
-                    int column = Integer.parseInt(parts[2]);
-
-                    if (!board.isInBounds(row, column)) {
-                        handleInvalidCommand("Row or column out of bounds");
-                        return;
-                    }
-                    if (!isBoardInitialized) {
-                        board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), row, column);
-                        isBoardInitialized = true;
-                    }
-                    boolean result = board.flag(row, column);
-                    doPrintBoard();
-                    if (!result) {
-                        handleInvalidCommand("You cannot flag already revealed cell");
-                    }
-                } catch (NumberFormatException e) {
-                    handleInvalidCommand("Expected numbers for row and column");
-                }
-                break;
+                handleFlagCommand(parts);
+                return;
             default:
                 handleInvalidCommand("Unknown command");
+        }
+    }
+
+    private void handleFlagCommand(String[] parts) {
+        if (parts.length != 3) {
+            handleInvalidCommand("Expected row and column coordinates");
+            return;
+        }
+        try {
+            int row = Integer.parseInt(parts[1]);
+            int column = Integer.parseInt(parts[2]);
+
+            if (!board.isInBounds(row, column)) {
+                handleInvalidCommand("Row or column out of bounds");
+                return;
+            }
+            if (!isBoardInitialized) {
+                board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), row, column);
+                isBoardInitialized = true;
+            }
+            boolean result = board.flag(row, column);
+            doPrintBoard();
+            if (!result) {
+                handleInvalidCommand("You cannot flag already revealed cell");
+            }
+        } catch (NumberFormatException e) {
+            handleInvalidCommand("Expected numbers for row and column");
         }
     }
 
