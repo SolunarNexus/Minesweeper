@@ -117,7 +117,7 @@ public final class Minesweeper {
                 break;
             case "flag", "f":
                 handleFlagCommand(parts);
-                return;
+                break;
             default:
                 handleInvalidCommand("Unknown command");
         }
