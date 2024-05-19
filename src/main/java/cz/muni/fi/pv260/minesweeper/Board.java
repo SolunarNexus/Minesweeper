@@ -31,10 +31,9 @@ public class Board {
     }
 
     Board(int rows, int cols, Collection<BoardCell> cells) {
-
         this.rows = rows;
         this.cols = cols;
-        this.mines = (int) cells.stream().filter(c -> c.value == 'M').count();
+        this.mines = (int) cells.stream().filter(BoardCell::isMine).count();
         this.cells = new ArrayList<>(cells);
 
         // calculate numbers
@@ -42,7 +41,7 @@ public class Board {
             for (int c = 0; c < cols; c++) {
                 char adjMinesChar = this.getAdjMinesCount(r, c);
                 if (adjMinesChar != 'M') {
-                    this.getCell(r, c).value = adjMinesChar;
+                    this.getCell(r, c).setValue(adjMinesChar);
                 }
             }
         }
@@ -57,7 +56,7 @@ public class Board {
         List<BoardCell> cells = new ArrayList<>(rows * cols);
 
         for (int i = 0; i < rows * cols; i++) {
-            cells.add(new BoardCell());
+            cells.add(new StandardCell(' '));
         }
 
         for (int i = 1; i < content.length; i++) {
@@ -66,7 +65,7 @@ public class Board {
                 Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
                 Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
                 if (row.isPresent() && col.isPresent()) {
-                    cells.get(row.get() * cols + col.get()).isRevealed = true;
+                    cells.get(row.get() * cols + col.get()).setRevealed(true);
                 } else {
                     return Optional.empty();
                 }
@@ -75,7 +74,7 @@ public class Board {
                 Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
                 Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
                 if (row.isPresent() && col.isPresent()) {
-                    cells.get(row.get() * cols + col.get()).isFlagged = true;
+                    cells.get(row.get() * cols + col.get()).toggleFlag();
                 } else {
                     return Optional.empty();
                 }
@@ -84,7 +83,7 @@ public class Board {
                 Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
                 Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
                 if (row.isPresent() && col.isPresent()) {
-                    cells.get(row.get() * cols + col.get()).value = 'M';
+                    cells.set(row.get() * cols + col.get(), new MineCell());
                 } else {
                     return Optional.empty();
                 }
@@ -117,17 +116,17 @@ public class Board {
 
         BoardCell cell = getCell(row, col);
 
-        if (cell.isFlagged){
+        if (cell.isFlagged()){
             return true;
         }
 
-        cell.isRevealed = true;
+        cell.setRevealed(true);
 
-        if (cell.value == '0') {
+        if (cell.getValue() == '0') {
             floodFill(row, col);
         }
 
-        return cell.value != 'M';
+        return !cell.isMine();
     }
 
     public boolean flag(int row, int col){
@@ -137,8 +136,8 @@ public class Board {
 
         BoardCell cell = getCell(row, col);
 
-        if (!cell.isRevealed){
-            cell.isFlagged = !cell.isFlagged;
+        if (!cell.isRevealed()){
+            cell.toggleFlag();
             return true;
         }
 
@@ -149,9 +148,11 @@ public class Board {
         for (int[] direction : DIRECTIONS) {
             int neighbourRow = row + direction[0];
             int neighbourCol = col + direction[1];
+
             if (isInBounds(neighbourRow, neighbourCol)) {
                 BoardCell neighbourCell = getCell(neighbourRow, neighbourCol);
-                if (!neighbourCell.isRevealed) {
+
+                if (!neighbourCell.isRevealed()) {
                     reveal(neighbourRow, neighbourCol);
                 }
             }
@@ -162,7 +163,7 @@ public class Board {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 var cell = getCell(r, c);
-                if (!cell.isRevealed && cell.value != 'M') {
+                if (!cell.isRevealed() && !cell.isMine()) {
                     return false;
                 }
             }
@@ -182,11 +183,11 @@ public class Board {
             for (int c = 0; c < cols; c++) {
                 if (cells != null) {
                     var cell = getCell(r, c);
-                    if (cell.isRevealed) {
-                        out.printf(" %c ", cell.value);
+                    if (cell.isRevealed()) {
+                        out.printf(" %c ", cell.getValue());
                         continue;
                     }
-                    if (cell.isFlagged){
+                    if (cell.isFlagged()){
                         out.print(" F ");
                         continue;
                     }
@@ -203,17 +204,17 @@ public class Board {
 
         for (int r = 0; r < rows; r++)
             for (int c = 0; c < cols; c++)
-                if (getCell(r, c).value == 'M')
+                if (getCell(r, c).isMine())
                     sb.append(String.format("%d,%d\n", r, c));
 
         for (int r = 0; r < rows; r++)
             for (int c = 0; c < cols; c++)
-                if (getCell(r, c).isRevealed)
+                if (getCell(r, c).isRevealed())
                     sb.append(String.format("R%d,%d\n", r, c));
 
         for (int r = 0; r < rows; r++)
             for (int c = 0; c < cols; c++)
-                if (getCell(r, c).isFlagged)
+                if (getCell(r, c).isFlagged())
                     sb.append(String.format("F%d,%d\n", r, c));
 
         return Base64
@@ -223,12 +224,15 @@ public class Board {
     }
 
     private void generateRandomBoard(int selectedRow, int selectedCol) {
-        cells = new ArrayList<BoardCell>(this.rows * this.cols);
+        cells = new ArrayList<>(this.rows * this.cols);
+
         for (int i = 0; i < rows * cols; i++) {
-            cells.add(new BoardCell());
+            cells.add(new StandardCell(' '));
         }
+
         RandomGenerator random = seed != null ? new Random(seed) : new Random();
         int mc = mines;
+
         while (mc > 0) {
             var tmp1 = random.nextInt(this.rows);
             var tmp2 = random.nextInt(this.cols);
@@ -237,8 +241,8 @@ public class Board {
             }
 
             BoardCell cell = cells.get(tmp1 * cols + tmp2);
-            if (cell.value != 'M') {
-                cell.value = 'M';
+            if (!cell.isMine()) {
+                cells.set(tmp1 * cols + tmp2, new MineCell());
                 mc--;
             }
         }
@@ -247,7 +251,7 @@ public class Board {
             for (int c = 0; c < cols; c++) {
                 char adjMinesChar = getAdjMinesCount(r, c);
                 if (adjMinesChar != 'M') {
-                    getCell(r, c).value = adjMinesChar;
+                    getCell(r, c).setValue(adjMinesChar);
                 }
             }
         }
@@ -255,7 +259,8 @@ public class Board {
 
     private char getAdjMinesCount(int r, int c) {
         int counter = 0;
-        if (getCell(r, c).value != 'M') {
+
+        if (!getCell(r, c).isMine()) {
             for (var dir : DIRECTIONS) {
                 var row = dir[0] + r;
                 var col = dir[1] + c;
@@ -265,7 +270,7 @@ public class Board {
                 }
 
                 var adj = getCell(row, col);
-                if (adj.value == 'M') {
+                if (adj.isMine()) {
                     counter++;
                 }
             }
@@ -302,7 +307,7 @@ public class Board {
             sb.append(String.format("%02d ", r));
             for (int c = 0; c < cols; c++) {
                 var cell = getCell(r, c);
-                sb.append(String.format("%c%c ", cell.isRevealed ? '*' : ' ', cell.value));
+                sb.append(String.format("%c%c ", cell.isRevealed() ? '*' : ' ', cell.getValue()));
             }
             sb.append("\n");
         }

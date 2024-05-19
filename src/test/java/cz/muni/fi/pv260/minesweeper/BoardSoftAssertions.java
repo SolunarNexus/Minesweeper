@@ -59,17 +59,18 @@ final class BoardSoftAssertions implements AutoCloseable {
 
         for (String line : lines) {
             for (char ch : line.toUpperCase().toCharArray()) {
-                var cell = new BoardCell();
-                cells.add(cell);
+                BoardCell cell = new StandardCell(' ');
 
                 switch (ch) {
-                    case 'M' -> cell.value = 'M';
-                    case '.' -> cell.isRevealed = true;
-                    case 'X' -> cell.isRevealed = false;
-                    case 'O' -> cell.isFlagged = true;
-                    case 'C' -> { cell.isFlagged = true; cell.value = 'M'; }
+                    case 'M' -> cell = new MineCell();
+                    case '.' -> cell.setRevealed(true);
+                    case 'X' -> cell.setRevealed(false);
+                    case 'O' -> cell.toggleFlag();
+                    case 'C' -> { cell = new MineCell(); cell.toggleFlag(); }
                     default -> throw new IllegalArgumentException("Unsupported character: " + ch);
                 }
+
+                cells.add(cell);
             }
         }
 
@@ -113,10 +114,10 @@ final class BoardSoftAssertions implements AutoCloseable {
         String actualBoard = "";
         for (int row = 0; row < lines.length; row++) {
             for (int column = 0; column < lines[row].length(); column++) {
-                if (board.getCell(row, column).isFlagged){
+                if (board.getCell(row, column).isFlagged()){
                     actualBoard += 'F';
                 } else {
-                    actualBoard += board.getCell(row, column).isRevealed ? '.' : 'X';
+                    actualBoard += board.getCell(row, column).isRevealed() ? '.' : 'X';
                 }
             }
             actualBoard += "\n";
@@ -131,7 +132,7 @@ final class BoardSoftAssertions implements AutoCloseable {
         String actualBoard = "";
         for (int row = 0; row < lines.length; row++) {
             for (int column = 0; column < lines[row].length(); column++) {
-                actualBoard += board.getCell(row, column).value;
+                actualBoard += board.getCell(row, column).getValue();
             }
             actualBoard += "\n";
         }
@@ -147,19 +148,19 @@ final class BoardSoftAssertions implements AutoCloseable {
     }
 
     void assertCell(int row, int column, char expectedValue) {
-        softly.assertThat(board.getCell(row, column).value)
+        softly.assertThat(board.getCell(row, column).getValue())
                 .as("Cell value at [%d, %d]", row, column)
                 .isEqualTo(expectedValue);
-        softly.assertThat(board.getCell(row, column).isRevealed)
+        softly.assertThat(board.getCell(row, column).isRevealed())
                 .as("Cell at [%d, %d] should not be revealed", row, column)
                 .isFalse();
     }
 
     void assertRevealedCell(int row, int column, char expectedValue) {
-        softly.assertThat(board.getCell(row, column).value)
+        softly.assertThat(board.getCell(row, column).getValue())
                 .as("Cell value at [%d, %d]", row, column)
                 .isEqualTo(expectedValue);
-        softly.assertThat(board.getCell(row, column).isRevealed)
+        softly.assertThat(board.getCell(row, column).isRevealed())
                 .as("Cell at [%d, %d] should be revealed", row, column)
                 .isTrue();
     }
