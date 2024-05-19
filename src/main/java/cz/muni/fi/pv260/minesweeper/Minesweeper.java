@@ -63,6 +63,23 @@ public final class Minesweeper {
         return null;
     }
 
+    private int[] parseCoordinates(String rowPart, String colPart) {
+        try {
+            int row = Integer.parseInt(rowPart);
+            int column = Integer.parseInt(colPart);
+
+            if (!board.isInBounds(row, column)) {
+                handleInvalidCommand("Row or column out of bounds");
+                return null;
+            }
+
+            return new int[]{row, column};
+        } catch (NumberFormatException e) {
+            handleInvalidCommand("Expected numbers for row and column");
+            return null;
+        }
+    }
+
     void runGame() {
         scanner = new Scanner(System.in);
         doPrintBoard();
@@ -111,25 +128,21 @@ public final class Minesweeper {
             handleInvalidCommand("Expected row and column coordinates");
             return;
         }
-        try {
-            int row = Integer.parseInt(parts[1]);
-            int column = Integer.parseInt(parts[2]);
 
-            if (!board.isInBounds(row, column)) {
-                handleInvalidCommand("Row or column out of bounds");
-                return;
-            }
+        var coordinates = parseCoordinates(parts[1], parts[2]);
+
+        if (coordinates != null) {
             if (!isBoardInitialized) {
-                board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), row, column);
+                board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), coordinates[0], coordinates[1]);
                 isBoardInitialized = true;
             }
-            boolean result = board.flag(row, column);
+
+            boolean result = board.flag(coordinates[0], coordinates[1]);
             doPrintBoard();
+
             if (!result) {
                 handleInvalidCommand("You cannot flag already revealed cell");
             }
-        } catch (NumberFormatException e) {
-            handleInvalidCommand("Expected numbers for row and column");
         }
     }
 
@@ -176,20 +189,21 @@ public final class Minesweeper {
             handleInvalidCommand("Expected row and column coordinates");
             return;
         }
-        try {
-            int row = Integer.parseInt(parts[1]);
-            int column = Integer.parseInt(parts[2]);
 
-            if (!board.isInBounds(row, column)) {
-                handleInvalidCommand("Row or column out of bounds");
-                return;
-            }
+        var coordinates = parseCoordinates(parts[1], parts[2]);
+
+        if (coordinates != null) {
+            var row = coordinates[0];
+            var column = coordinates[1];
+
             if (!isBoardInitialized) {
                 board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), row, column);
                 isBoardInitialized = true;
             }
+
             boolean result = board.reveal(row, column);
             doPrintBoard();
+
             if (!result) {
                 handleMine(row, column);
             }
@@ -197,8 +211,6 @@ public final class Minesweeper {
             if (board.isCleared()) {
                 doWon();
             }
-        } catch (NumberFormatException e) {
-            handleInvalidCommand("Expected numbers for row and column");
         }
     }
 
