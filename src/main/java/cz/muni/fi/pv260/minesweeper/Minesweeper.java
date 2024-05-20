@@ -177,7 +177,6 @@ public final class Minesweeper {
     }
 
     private void doPrintBoard() {
-        System.out.printf("Remaining unflagged mines: %d\n", board.mines - board.flags);
         board.print(System.out);
     }
 
