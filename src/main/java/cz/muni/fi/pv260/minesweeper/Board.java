@@ -131,7 +131,7 @@ public class Board {
         return !cell.isMine();
     }
 
-    public int flag(int row, int col){
+    public boolean flag(int row, int col){
         if (cells == null){
             generateRandomBoard(row, col);
         }
@@ -141,9 +141,10 @@ public class Board {
         if (!cell.isRevealed()){
             cell.toggleFlag();
             flags += cell.isFlagged() ? 1 : -1;
+            return true;
         }
 
-        return flags;
+        return false;
     }
 
     private void floodFill(int row, int col) {

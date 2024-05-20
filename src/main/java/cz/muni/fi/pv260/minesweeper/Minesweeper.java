@@ -137,8 +137,12 @@ public final class Minesweeper {
                 isBoardInitialized = true;
             }
 
-            board.flag(coordinates[0], coordinates[1]);
+            var result = board.flag(coordinates[0], coordinates[1]);
             doPrintBoard();
+
+            if(!result){
+                handleInvalidCommand("You cannot flag already revealed cell");
+            }
         }
     }
 

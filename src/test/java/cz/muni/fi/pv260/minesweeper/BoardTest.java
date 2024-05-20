@@ -248,8 +248,8 @@ final class BoardTest {
                 """;
 
         try (var softly = new BoardSoftAssertions(board)) {
-            var flags = softly.flag(0, 0);
-            assertThat(flags).isEqualTo(1);
+            softly.flag(0, 0);
+            assertThat(softly.flags()).isEqualTo(1);
 
             String expectedBoard = """
                     FXXXXXXXX
@@ -274,8 +274,8 @@ final class BoardTest {
             softly.flag(0, 0);
             softly.flag(0, 1);
             softly.flag(0, 2);
-            var flags = softly.flag(0, 3);
-            assertThat(flags).isEqualTo(4);
+            softly.flag(0, 3);
+            assertThat(softly.flags()).isEqualTo(4);
 
             String expectedBoard = """
                     FFFFXXXXX
@@ -297,8 +297,8 @@ final class BoardTest {
                 """;
 
         try (var softly = new BoardSoftAssertions(board)) {
-            var flags = softly.flag(0, 0);
-            assertThat(flags).isEqualTo(0);
+            softly.flag(0, 0);
+            assertThat(softly.flags()).isEqualTo(0);
 
             String expectedBoard = """
                     XXXXXXXXX
@@ -319,8 +319,8 @@ final class BoardTest {
                 XXMXXXMXX
                 """;
         try (var softly = new BoardSoftAssertions(board)) {
-            var flags = softly.flag(0, 0);
-            assertThat(flags).isEqualTo(0);
+            softly.flag(0, 0);
+            assertThat(softly.flags()).isEqualTo(0);
 
             String expectedBoard = """
                     ....XXXXX

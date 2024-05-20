@@ -81,8 +81,8 @@ final class BoardSoftAssertions implements AutoCloseable {
         board.reveal(row, col);
     }
 
-    int flag(int row, int col) {
-        return board.flag(row, col);
+    void flag(int row, int col) {
+        board.flag(row, col);
     }
 
     int flags(){
