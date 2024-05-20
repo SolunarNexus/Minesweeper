@@ -85,6 +85,10 @@ final class BoardSoftAssertions implements AutoCloseable {
         return board.flag(row, col);
     }
 
+    int flags(){
+        return board.flags;
+    }
+
     void assertRows(int expectedRows) {
         softly.assertThat(board.rows)
                 .as("Board rows")

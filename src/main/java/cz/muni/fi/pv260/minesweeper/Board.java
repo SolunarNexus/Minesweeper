@@ -154,6 +154,10 @@ public class Board {
             if (isInBounds(neighbourRow, neighbourCol)) {
                 BoardCell neighbourCell = getCell(neighbourRow, neighbourCol);
 
+                if(!neighbourCell.isMine() && neighbourCell.isFlagged()){
+                    neighbourCell.toggleFlag();
+                    flags -= 1;
+                }
                 if (!neighbourCell.isRevealed()) {
                     reveal(neighbourRow, neighbourCol);
                 }

@@ -215,6 +215,30 @@ final class BoardTest {
     }
 
     @Test
+    void revealWithFloodFillWithMinesAndWrongFlags(){
+        String board = """
+                XXXXOXXXX
+                XXXXXOXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            assertThat(softly.flags()).isEqualTo(2);
+            softly.reveal(0, 0);
+            assertThat(softly.flags()).isEqualTo(0);
+
+            String expectedBoard = """
+                    .........
+                    .........
+                    X........
+                    XXX...X..
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
     void flagCell(){
         String board = """
                 XXXXMXXXX
