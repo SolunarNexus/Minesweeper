@@ -224,10 +224,37 @@ final class BoardTest {
                 """;
 
         try (var softly = new BoardSoftAssertions(board)) {
-            softly.flag(0, 0);
+            var flags = softly.flag(0, 0);
+            assertThat(flags).isEqualTo(1);
 
             String expectedBoard = """
                     FXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void flagManyCells(){
+        String board = """
+                XXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+            softly.flag(0, 1);
+            softly.flag(0, 2);
+            var flags = softly.flag(0, 3);
+            assertThat(flags).isEqualTo(4);
+
+            String expectedBoard = """
+                    FFFFXXXXX
                     XXXXXXXXX
                     XXXXXXXXX
                     XXXXXXXXX
@@ -246,7 +273,8 @@ final class BoardTest {
                 """;
 
         try (var softly = new BoardSoftAssertions(board)) {
-            softly.flag(0, 0);
+            var flags = softly.flag(0, 0);
+            assertThat(flags).isEqualTo(0);
 
             String expectedBoard = """
                     XXXXXXXXX
@@ -267,7 +295,8 @@ final class BoardTest {
                 XXMXXXMXX
                 """;
         try (var softly = new BoardSoftAssertions(board)) {
-            softly.flag(0, 0);
+            var flags = softly.flag(0, 0);
+            assertThat(flags).isEqualTo(0);
 
             String expectedBoard = """
                     ....XXXXX

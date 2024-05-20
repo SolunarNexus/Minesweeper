@@ -95,7 +95,7 @@ class MinesweeperTest {
                 exit
                 """;
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-        when(board.flag(1, 2)).thenReturn(true);
+        when(board.flag(1, 2)).thenReturn(1);
         when(board.isInBounds(1, 2)).thenReturn(true);
         minesweeper.isBoardInitialized = true;
 

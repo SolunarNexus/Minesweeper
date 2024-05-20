@@ -19,6 +19,7 @@ public class Board {
     };
 
     final int rows, cols, mines;
+    int flags = 0;
     List<BoardCell> cells = null;
     Long seed;
 
@@ -34,6 +35,7 @@ public class Board {
         this.rows = rows;
         this.cols = cols;
         this.mines = (int) cells.stream().filter(BoardCell::isMine).count();
+        this.flags = (int) cells.stream().filter(BoardCell::isFlagged).count();
         this.cells = new ArrayList<>(cells);
 
         // calculate numbers
@@ -129,7 +131,7 @@ public class Board {
         return !cell.isMine();
     }
 
-    public boolean flag(int row, int col){
+    public int flag(int row, int col){
         if (cells == null){
             generateRandomBoard(row, col);
         }
@@ -138,10 +140,10 @@ public class Board {
 
         if (!cell.isRevealed()){
             cell.toggleFlag();
-            return true;
+            flags += cell.isFlagged() ? 1 : -1;
         }
 
-        return false;
+        return flags;
     }
 
     private void floodFill(int row, int col) {
