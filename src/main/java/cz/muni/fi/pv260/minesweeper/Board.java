@@ -61,6 +61,10 @@ public class Board {
             cells.add(new StandardCell(' '));
         }
 
+        return getBoardFromRawContent(content, rows, cols, cells);
+    }
+
+    private static Optional<Board> getBoardFromRawContent(String[] content, int rows, int cols, List<BoardCell> cells) {
         for (int i = 1; i < content.length; i++) {
             if (content[i].startsWith("R")) {
                 var rowColStr = content[i].substring(1).split(",");
