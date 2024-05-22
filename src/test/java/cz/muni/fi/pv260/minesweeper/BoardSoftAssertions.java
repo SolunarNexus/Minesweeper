@@ -59,14 +59,14 @@ final class BoardSoftAssertions implements AutoCloseable {
 
         for (String line : lines) {
             for (char ch : line.toUpperCase().toCharArray()) {
-                BoardCell cell = new StandardCell(' ');
+                BoardCell cell = new BoardCell(' ');
 
                 switch (ch) {
-                    case 'M' -> cell = new MineCell();
-                    case '.' -> cell.setRevealed(true);
-                    case 'X' -> cell.setRevealed(false);
+                    case 'M' -> cell.setMine();
+                    case '.' -> cell.reveal();
+                    case 'X' -> {}
                     case 'O' -> cell.toggleFlag();
-                    case 'C' -> { cell = new MineCell(); cell.toggleFlag(); }
+                    case 'C' -> { cell.setMine(); cell.toggleFlag(); }
                     default -> throw new IllegalArgumentException("Unsupported character: " + ch);
                 }
 

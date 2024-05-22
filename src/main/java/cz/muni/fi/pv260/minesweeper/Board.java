@@ -58,7 +58,7 @@ public class Board {
         List<BoardCell> cells = new ArrayList<>(rows * cols);
 
         for (int i = 0; i < rows * cols; i++) {
-            cells.add(new StandardCell(' '));
+            cells.add(new BoardCell(' '));
         }
 
         return getBoardFromRawContent(content, rows, cols, cells);
@@ -72,13 +72,13 @@ public class Board {
 
             switch (content[i].charAt(0)) {
                 case 'R':
-                    cells.get(cellIndex.get()).setRevealed(true);
+                    cells.get(cellIndex.get()).reveal();
                     break;
                 case 'F':
                     cells.get(cellIndex.get()).toggleFlag();
                     break;
                 default:
-                    cells.set(cellIndex.get(), new MineCell());
+                    cells.get(cellIndex.get()).setMine();
             }
         }
 
@@ -130,7 +130,7 @@ public class Board {
             return true;
         }
 
-        cell.setRevealed(true);
+        cell.reveal();
 
         if (cell.getValue() == '0') {
             floodFill(row, col);
@@ -238,7 +238,7 @@ public class Board {
         cells = new ArrayList<>(this.rows * this.cols);
 
         for (int i = 0; i < rows * cols; i++) {
-            cells.add(new StandardCell(' '));
+            cells.add(new BoardCell(' '));
         }
 
         RandomGenerator random = seed != null ? new Random(seed) : new Random();
@@ -253,7 +253,7 @@ public class Board {
 
             BoardCell cell = cells.get(tmp1 * cols + tmp2);
             if (!cell.isMine()) {
-                cells.set(tmp1 * cols + tmp2, new MineCell());
+                cells.get(tmp1 * cols + tmp2).setMine();
                 mc--;
             }
         }

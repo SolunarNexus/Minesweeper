@@ -1,9 +1,10 @@
 package cz.muni.fi.pv260.minesweeper;
 
-abstract class BoardCell {
+public class BoardCell {
     private char value;
     private boolean isFlagged = false;
     private boolean isRevealed = false;
+    private boolean isMine = false;
 
     public BoardCell(char value) {
         this.value = value;
@@ -18,7 +19,12 @@ abstract class BoardCell {
     }
 
     public boolean isMine(){
-        return false;
+        return isMine;
+    }
+
+    public void setMine(){
+        isMine = true;
+        value = 'M';
     }
 
     public boolean isFlagged() {
@@ -33,7 +39,7 @@ abstract class BoardCell {
         return isRevealed;
     }
 
-    public void setRevealed(boolean revealed) {
-        isRevealed = revealed;
+    public void reveal() {
+        isRevealed = true;
     }
 }
