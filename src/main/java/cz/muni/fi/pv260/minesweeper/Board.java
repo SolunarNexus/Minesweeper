@@ -66,38 +66,33 @@ public class Board {
 
     private static Optional<Board> getBoardFromRawContent(String[] content, int rows, int cols, List<BoardCell> cells) {
         for (int i = 1; i < content.length; i++) {
-            if (content[i].startsWith("R")) {
-                var cellIndex = getCellIndexFromRawContent(content[i], rows, cols, false);
+            var cellIndex = getCellIndexFromRawContent(content[i], rows, cols);
 
-                if (cellIndex.isPresent()){
+            if (cellIndex.isEmpty()) return Optional.empty();
+
+            switch (content[i].charAt(0)) {
+                case 'R':
                     cells.get(cellIndex.get()).setRevealed(true);
-                } else {
-                    return Optional.empty();
-                }
-            } else if (content[i].startsWith("F")) {
-                var cellIndex = getCellIndexFromRawContent(content[i], rows, cols, false);
-
-                if (cellIndex.isPresent()) {
+                    break;
+                case 'F':
                     cells.get(cellIndex.get()).toggleFlag();
-                } else {
-                    return Optional.empty();
-                }
-            } else {
-                var cellIndex = getCellIndexFromRawContent(content[i], rows, cols, true);
-
-                if (cellIndex.isPresent()) {
+                    break;
+                default:
                     cells.set(cellIndex.get(), new MineCell());
-                } else {
-                    return Optional.empty();
-                }
             }
         }
 
         return Optional.of(new Board(rows, cols, cells));
     }
 
-    private static Optional<Integer> getCellIndexFromRawContent(String content, int rows, int cols, boolean isMine) {
-        var rowColStr = content.substring(isMine ? 0 : 1).split(",");
+    private static Optional<Integer> getCellIndexFromRawContent(String content, int rows, int cols) {
+        String[] rowColStr;
+
+        if (content.startsWith("R") || content.startsWith("F")) {
+            rowColStr = content.substring(1).split(",");
+        } else {
+            rowColStr = content.split(",");
+        }
         Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
         Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
 
@@ -131,7 +126,7 @@ public class Board {
 
         BoardCell cell = getCell(row, col);
 
-        if (cell.isFlagged()){
+        if (cell.isFlagged()) {
             return true;
         }
 
@@ -144,14 +139,14 @@ public class Board {
         return !cell.isMine();
     }
 
-    public boolean flag(int row, int col){
-        if (cells == null){
+    public boolean flag(int row, int col) {
+        if (cells == null) {
             generateRandomBoard(row, col);
         }
 
         BoardCell cell = getCell(row, col);
 
-        if (!cell.isRevealed()){
+        if (!cell.isRevealed()) {
             cell.toggleFlag();
             flags += cell.isFlagged() ? 1 : -1;
             return true;
@@ -168,7 +163,7 @@ public class Board {
             if (isInBounds(neighbourRow, neighbourCol)) {
                 BoardCell neighbourCell = getCell(neighbourRow, neighbourCol);
 
-                if(!neighbourCell.isMine() && neighbourCell.isFlagged()){
+                if (!neighbourCell.isMine() && neighbourCell.isFlagged()) {
                     neighbourCell.toggleFlag();
                     flags -= 1;
                 }
@@ -207,7 +202,7 @@ public class Board {
                         out.printf(" %c ", cell.getValue());
                         continue;
                     }
-                    if (cell.isFlagged()){
+                    if (cell.isFlagged()) {
                         out.print(" F ");
                         continue;
                     }
