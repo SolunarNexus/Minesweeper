@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.random.RandomGenerator;
+import java.util.stream.Collectors;
 
 public class Board {
 
@@ -217,25 +218,21 @@ public class Board {
         StringBuffer sb = new StringBuffer();
         sb.append(String.format("%d,%d\n", rows, cols));
 
-        for (int r = 0; r < rows; r++)
-            for (int c = 0; c < cols; c++)
-                if (getCell(r, c).isMine())
-                    sb.append(String.format("%d,%d\n", r, c));
-
-        for (int r = 0; r < rows; r++)
-            for (int c = 0; c < cols; c++)
-                if (getCell(r, c).isRevealed())
-                    sb.append(String.format("R%d,%d\n", r, c));
-
-        for (int r = 0; r < rows; r++)
-            for (int c = 0; c < cols; c++)
-                if (getCell(r, c).isFlagged())
-                    sb.append(String.format("F%d,%d\n", r, c));
+        appendExportData(sb, cells.stream().map(BoardCell::isMine).toList(), "%d,%d\n");
+        appendExportData(sb, cells.stream().map(BoardCell::isRevealed).toList(), "R%d,%d\n");
+        appendExportData(sb, cells.stream().map(BoardCell::isFlagged).toList(), "F%d,%d\n");
 
         return Base64
                 .getEncoder()
                 .withoutPadding()
                 .encodeToString(sb.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void appendExportData(StringBuffer sb, List<Boolean> affectedCells, String formatString){
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++)
+                if (affectedCells.get(r * cols + c))
+                    sb.append(String.format(formatString, r, c));
     }
 
     private void generateRandomBoard(int selectedRow, int selectedCol) {
