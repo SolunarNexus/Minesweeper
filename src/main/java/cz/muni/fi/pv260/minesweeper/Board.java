@@ -67,29 +67,26 @@ public class Board {
     private static Optional<Board> getBoardFromRawContent(String[] content, int rows, int cols, List<BoardCell> cells) {
         for (int i = 1; i < content.length; i++) {
             if (content[i].startsWith("R")) {
-                var rowColStr = content[i].substring(1).split(",");
-                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
-                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
-                if (row.isPresent() && col.isPresent()) {
-                    cells.get(row.get() * cols + col.get()).setRevealed(true);
+                var cellIndex = getCellIndexFromRawContent(content[i], rows, cols, false);
+
+                if (cellIndex.isPresent()){
+                    cells.get(cellIndex.get()).setRevealed(true);
                 } else {
                     return Optional.empty();
                 }
             } else if (content[i].startsWith("F")) {
-                var rowColStr = content[i].substring(1).split(",");
-                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
-                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
-                if (row.isPresent() && col.isPresent()) {
-                    cells.get(row.get() * cols + col.get()).toggleFlag();
+                var cellIndex = getCellIndexFromRawContent(content[i], rows, cols, false);
+
+                if (cellIndex.isPresent()) {
+                    cells.get(cellIndex.get()).toggleFlag();
                 } else {
                     return Optional.empty();
                 }
             } else {
-                var rowColStr = content[i].split(",");
-                Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
-                Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
-                if (row.isPresent() && col.isPresent()) {
-                    cells.set(row.get() * cols + col.get(), new MineCell());
+                var cellIndex = getCellIndexFromRawContent(content[i], rows, cols, true);
+
+                if (cellIndex.isPresent()) {
+                    cells.set(cellIndex.get(), new MineCell());
                 } else {
                     return Optional.empty();
                 }
@@ -97,6 +94,18 @@ public class Board {
         }
 
         return Optional.of(new Board(rows, cols, cells));
+    }
+
+    private static Optional<Integer> getCellIndexFromRawContent(String content, int rows, int cols, boolean isMine) {
+        var rowColStr = content.substring(isMine ? 0 : 1).split(",");
+        Optional<Integer> row = parseCoordinate(rowColStr[0], rows);
+        Optional<Integer> col = parseCoordinate(rowColStr[1], cols);
+
+        if (row.isPresent() && col.isPresent()) {
+            return Optional.of(row.get() * cols + col.get());
+        }
+
+        return Optional.empty();
     }
 
     private static Optional<Integer> parseCoordinate(String text, int max) {
