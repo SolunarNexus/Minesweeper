@@ -1,7 +1,6 @@
 package cz.muni.fi.pv260.minesweeper;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.NotExtensible;
 
 import java.util.Optional;
 
@@ -486,5 +485,19 @@ final class BoardTest {
                             """
             );
         }
+    }
+
+    @Test
+    void boardToString() {
+        Board board = new Board(5, 5, 5, 1234L, 0, 0);
+
+        assertThat(board.toString()).isEqualTo("""
+                   00 01 02 03 04\s
+                00  0  0  1  M  1\s
+                01  0  1  2  2  1\s
+                02  1  2  M  2  1\s
+                03  M  2  2  M  2\s
+                04  1  1  1  2  M\s
+                """);
     }
 }

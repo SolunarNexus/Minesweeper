@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.random.RandomGenerator;
-import java.util.stream.Collectors;
 
 public class Board {
 
