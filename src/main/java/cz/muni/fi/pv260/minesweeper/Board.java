@@ -67,19 +67,8 @@ public class Board {
     private static Optional<Board> getBoardFromRawContent(String[] content, int rows, int cols, List<BoardCell> cells) {
         for (int i = 1; i < content.length; i++) {
             var cellIndex = getCellIndexFromRawContent(content[i], rows, cols);
-
             if (cellIndex.isEmpty()) return Optional.empty();
-
-            switch (content[i].charAt(0)) {
-                case 'R':
-                    cells.get(cellIndex.get()).reveal();
-                    break;
-                case 'F':
-                    cells.get(cellIndex.get()).toggleFlag();
-                    break;
-                default:
-                    cells.get(cellIndex.get()).setMine();
-            }
+            cells.get(cellIndex.get()).setFromImportString(content[i]);
         }
 
         return Optional.of(new Board(rows, cols, cells));

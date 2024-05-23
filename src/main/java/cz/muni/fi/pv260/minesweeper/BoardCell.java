@@ -55,4 +55,17 @@ public class BoardCell {
         }
         return "";
     }
+
+    public void setFromImportString(String s){
+        switch (s.charAt(0)) {
+            case 'R':
+                reveal();
+                break;
+            case 'F':
+                toggleFlag();
+                break;
+            default:
+                setMine();
+        }
+    }
 }
