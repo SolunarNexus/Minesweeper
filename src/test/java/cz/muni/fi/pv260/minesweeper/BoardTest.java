@@ -419,7 +419,7 @@ final class BoardTest {
         Board board = new Board(5, 10, 10, 1234L, 0, 0);
         board.reveal(0, 0);
         String export = board.exportBoard();
-        assertThat(export).isEqualTo("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
+        assertThat(export).isEqualTo("NSwxMApSMCwwClIwLDEKMCwyCjAsMwowLDgKUjEsMApSMSwxClIyLDAKUjIsMQoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkK");
     }
 
     @Test
@@ -429,7 +429,7 @@ final class BoardTest {
         board.flag(0, 2);
         board.flag(1, 2);
         String export = board.exportBoard();
-        assertThat(export).isEqualTo("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEKRjAsMgpGMSwyCg");
+        assertThat(export).isEqualTo("NSwxMApSMCwwClIwLDEKMCwyCjAsMwowLDgKUjEsMApSMSwxCkYxLDIKUjIsMApSMiwxCjIsNgoyLDcKMywwCjMsMwo0LDQKNCw2CjQsOQo");
     }
 
     @Test

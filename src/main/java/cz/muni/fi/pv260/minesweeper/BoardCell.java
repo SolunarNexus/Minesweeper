@@ -42,4 +42,17 @@ public class BoardCell {
     public void reveal() {
         isRevealed = true;
     }
+
+    public String getExportString(){
+        if(isMine){
+            return "%d,%d\n";
+        }
+        if (isFlagged){
+            return "F%d,%d\n";
+        }
+        if (isRevealed){
+            return "R%d,%d\n";
+        }
+        return "";
+    }
 }
