@@ -41,8 +41,9 @@ final class BoardSoftAssertions implements AutoCloseable {
      *   <li>{@code 'M'} - represents a mine (naturally unrevealed)
      *   <li>{@code 'X'} - represents an empty cell (not revealed yet)
      *   <li>{@code '.'} - represents an empty revealed cell
-     * </ul>
-     *
+     *   <li>{@code 'O'} - represents a flagged cell without mine (open position)
+     *   <li>{@code 'C'} - represents a flagged cell with a mine (closed position)
+     * <ul>
      * @param boardAsString condensed string representation of the board
      *
      * @return loaded and initialized board
@@ -58,15 +59,18 @@ final class BoardSoftAssertions implements AutoCloseable {
 
         for (String line : lines) {
             for (char ch : line.toUpperCase().toCharArray()) {
-                var cell = new BoardCell();
-                cells.add(cell);
+                BoardCell cell = new BoardCell(' ');
 
                 switch (ch) {
-                    case 'M' -> cell.value = 'M';
-                    case '.' -> cell.isRevealed = true;
-                    case 'X' -> cell.isRevealed = false;
+                    case 'M' -> cell.setMine();
+                    case '.' -> cell.reveal();
+                    case 'X' -> {}
+                    case 'O' -> cell.toggleFlag();
+                    case 'C' -> { cell.setMine(); cell.toggleFlag(); }
                     default -> throw new IllegalArgumentException("Unsupported character: " + ch);
                 }
+
+                cells.add(cell);
             }
         }
 
@@ -75,6 +79,14 @@ final class BoardSoftAssertions implements AutoCloseable {
 
     void reveal(int row, int col) {
         board.reveal(row, col);
+    }
+
+    void flag(int row, int col) {
+        board.flag(row, col);
+    }
+
+    int flags(){
+        return board.flags;
     }
 
     void assertRows(int expectedRows) {
@@ -106,7 +118,11 @@ final class BoardSoftAssertions implements AutoCloseable {
         String actualBoard = "";
         for (int row = 0; row < lines.length; row++) {
             for (int column = 0; column < lines[row].length(); column++) {
-                actualBoard += board.getCell(row, column).isRevealed ? '.' : 'X';
+                if (board.getCell(row, column).isFlagged()){
+                    actualBoard += 'F';
+                } else {
+                    actualBoard += board.getCell(row, column).isRevealed() ? '.' : 'X';
+                }
             }
             actualBoard += "\n";
         }
@@ -120,7 +136,7 @@ final class BoardSoftAssertions implements AutoCloseable {
         String actualBoard = "";
         for (int row = 0; row < lines.length; row++) {
             for (int column = 0; column < lines[row].length(); column++) {
-                actualBoard += board.getCell(row, column).value;
+                actualBoard += board.getCell(row, column).getValue();
             }
             actualBoard += "\n";
         }
@@ -136,19 +152,19 @@ final class BoardSoftAssertions implements AutoCloseable {
     }
 
     void assertCell(int row, int column, char expectedValue) {
-        softly.assertThat(board.getCell(row, column).value)
+        softly.assertThat(board.getCell(row, column).getValue())
                 .as("Cell value at [%d, %d]", row, column)
                 .isEqualTo(expectedValue);
-        softly.assertThat(board.getCell(row, column).isRevealed)
+        softly.assertThat(board.getCell(row, column).isRevealed())
                 .as("Cell at [%d, %d] should not be revealed", row, column)
                 .isFalse();
     }
 
     void assertRevealedCell(int row, int column, char expectedValue) {
-        softly.assertThat(board.getCell(row, column).value)
+        softly.assertThat(board.getCell(row, column).getValue())
                 .as("Cell value at [%d, %d]", row, column)
                 .isEqualTo(expectedValue);
-        softly.assertThat(board.getCell(row, column).isRevealed)
+        softly.assertThat(board.getCell(row, column).isRevealed())
                 .as("Cell at [%d, %d] should be revealed", row, column)
                 .isTrue();
     }

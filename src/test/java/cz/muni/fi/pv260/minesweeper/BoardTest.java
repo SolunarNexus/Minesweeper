@@ -192,6 +192,168 @@ final class BoardTest {
     }
 
     @Test
+    void revealWithFloodFillWithMinesAndFlags(){
+        String board = """
+                XXXXCXXXX
+                XXXXXCXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 0);
+
+            String expectedBoard = """
+                    ....FXXXX
+                    ....XFXXX
+                    X...XXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void revealWithFloodFillWithMinesAndWrongFlags(){
+        String board = """
+                XXXXOXXXX
+                XXXXXOXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            assertThat(softly.flags()).isEqualTo(2);
+            softly.reveal(0, 0);
+            assertThat(softly.flags()).isEqualTo(0);
+
+            String expectedBoard = """
+                    .........
+                    .........
+                    X........
+                    XXX...X..
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void flagCell(){
+        String board = """
+                XXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+            assertThat(softly.flags()).isEqualTo(1);
+
+            String expectedBoard = """
+                    FXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void flagManyCells(){
+        String board = """
+                XXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+            softly.flag(0, 1);
+            softly.flag(0, 2);
+            softly.flag(0, 3);
+            assertThat(softly.flags()).isEqualTo(4);
+
+            String expectedBoard = """
+                    FFFFXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void unflagCell(){
+        String board = """
+                OXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+            assertThat(softly.flags()).isEqualTo(0);
+
+            String expectedBoard = """
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void flagRevealedCell(){
+        String board = """
+                ....MXXXX
+                ....XMXXX
+                M...XXXXX
+                XXMXXXMXX
+                """;
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.flag(0, 0);
+            assertThat(softly.flags()).isEqualTo(0);
+
+            String expectedBoard = """
+                    ....XXXXX
+                    ....XXXXX
+                    X...XXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
+    void revealFlaggedCell(){
+        String board = """
+                CXXXMXXXX
+                XXXXXMXXX
+                MXXXXXXXX
+                XXMXXXMXX
+                """;
+
+        try (var softly = new BoardSoftAssertions(board)) {
+            softly.reveal(0, 0);
+
+            String expectedBoard = """
+                    FXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    XXXXXXXXX
+                    """;
+            softly.assertBoardRevealed(expectedBoard);
+        }
+    }
+
+    @Test
     void createBoardWithSeed_shouldGenerateTheSameGame() {
         Board board = new Board(5, 5, 5, 1234L, 0, 0);
 
@@ -257,7 +419,17 @@ final class BoardTest {
         Board board = new Board(5, 10, 10, 1234L, 0, 0);
         board.reveal(0, 0);
         String export = board.exportBoard();
-        assertThat(export).isEqualTo("NSwxMAowLDIKMCwzCjAsOAoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkKUjAsMApSMCwxClIxLDAKUjEsMQpSMiwwClIyLDEK");
+        assertThat(export).isEqualTo("NSwxMApSMCwwClIwLDEKMCwyCjAsMwowLDgKUjEsMApSMSwxClIyLDAKUjIsMQoyLDYKMiw3CjMsMAozLDMKNCw0CjQsNgo0LDkK");
+    }
+
+    @Test
+    void boardExportWithFlags(){
+        Board board = new Board(5, 10, 10, 1234L, 0 ,0);
+        board.reveal(0, 0);
+        board.flag(0, 2);
+        board.flag(1, 2);
+        String export = board.exportBoard();
+        assertThat(export).isEqualTo("NSwxMApSMCwwClIwLDEKMCwyCjAsMwowLDgKUjEsMApSMSwxCkYxLDIKUjIsMApSMiwxCjIsNgoyLDcKMywwCjMsMwo0LDQKNCw2CjQsOQo");
     }
 
     @Test
@@ -285,5 +457,47 @@ final class BoardTest {
                             """
             );
         }
+    }
+
+    @Test
+    void boardImportWithFlags(){
+        Optional<Board> board = Board.importBoard("NSwxMAowLDEKMCw0CjEsMwoxLDYKMiwwCjIsOQozLDAKMyw1CjMsNgo0LDYKUjAsMApSMCw3ClIwLDgKUjAsOQpSMSw3ClIxLDgKUjEsOQpGMCwxCg");
+        assertThat(board).isPresent();
+
+        try (var softly = new BoardSoftAssertions(board.get())) {
+            softly.assertBoardValues(
+                    """
+                            1M22M21100
+                            222M22M111
+                            M21123321M
+                            M2001MM211
+                            110013M200
+                            """
+            );
+
+            softly.assertBoardRevealed(
+                    """
+                            .FXXXXX...
+                            XXXXXXX...
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            XXXXXXXXXX
+                            """
+            );
+        }
+    }
+
+    @Test
+    void boardToString() {
+        Board board = new Board(5, 5, 5, 1234L, 0, 0);
+
+        assertThat(board.toString()).isEqualTo("""
+                   00 01 02 03 04\s
+                00  0  0  1  M  1\s
+                01  0  1  2  2  1\s
+                02  1  2  M  2  1\s
+                03  M  2  2  M  2\s
+                04  1  1  1  2  M\s
+                """);
     }
 }

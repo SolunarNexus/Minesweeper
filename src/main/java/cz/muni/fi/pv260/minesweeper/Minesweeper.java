@@ -17,6 +17,7 @@ public final class Minesweeper {
     public static final String USAGE = """
             Supported commands:
             r[eveal] <row> <column> - reveals cell
+            f[lag] <row> <column> - flags cell
             d[ebug] - prints debug output
             export - exports current board
             import <base64-encoded board> - imports new board
@@ -62,6 +63,23 @@ public final class Minesweeper {
         return null;
     }
 
+    private int[] parseCoordinates(String rowPart, String colPart) {
+        try {
+            int row = Integer.parseInt(rowPart);
+            int column = Integer.parseInt(colPart);
+
+            if (!board.isInBounds(row, column)) {
+                handleInvalidCommand("Row or column out of bounds");
+                return null;
+            }
+
+            return new int[]{row, column};
+        } catch (NumberFormatException e) {
+            handleInvalidCommand("Expected numbers for row and column");
+            return null;
+        }
+    }
+
     void runGame() {
         scanner = new Scanner(System.in);
         doPrintBoard();
@@ -97,8 +115,34 @@ public final class Minesweeper {
             case "reveal", "r":
                 handleRevealCommand(parts);
                 break;
+            case "flag", "f":
+                handleFlagCommand(parts);
+                break;
             default:
                 handleInvalidCommand("Unknown command");
+        }
+    }
+
+    private void handleFlagCommand(String[] parts) {
+        if (parts.length != 3) {
+            handleInvalidCommand("Expected row and column coordinates");
+            return;
+        }
+
+        var coordinates = parseCoordinates(parts[1], parts[2]);
+
+        if (coordinates != null) {
+            if (!isBoardInitialized) {
+                board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), coordinates[0], coordinates[1]);
+                isBoardInitialized = true;
+            }
+
+            var result = board.flag(coordinates[0], coordinates[1]);
+            doPrintBoard();
+
+            if(!result){
+                handleInvalidCommand("You cannot flag already revealed cell");
+            }
         }
     }
 
@@ -138,6 +182,7 @@ public final class Minesweeper {
 
     private void doPrintBoard() {
         board.print(System.out);
+        System.out.printf("Remaining unflagged mines: %d\n", board.mines - board.flags);
     }
 
     private void handleRevealCommand(String[] parts) {
@@ -145,20 +190,21 @@ public final class Minesweeper {
             handleInvalidCommand("Expected row and column coordinates");
             return;
         }
-        try {
-            int row = Integer.parseInt(parts[1]);
-            int column = Integer.parseInt(parts[2]);
 
-            if (!board.isInBounds(row, column)) {
-                handleInvalidCommand("Row or column out of bounds");
-                return;
-            }
+        var coordinates = parseCoordinates(parts[1], parts[2]);
+
+        if (coordinates != null) {
+            var row = coordinates[0];
+            var column = coordinates[1];
+
             if (!isBoardInitialized) {
                 board = new Board(configuration.getRows(), configuration.getCols(), configuration.getMines(), configuration.getSeed(), row, column);
                 isBoardInitialized = true;
             }
+
             boolean result = board.reveal(row, column);
             doPrintBoard();
+
             if (!result) {
                 handleMine(row, column);
             }
@@ -166,8 +212,6 @@ public final class Minesweeper {
             if (board.isCleared()) {
                 doWon();
             }
-        } catch (NumberFormatException e) {
-            handleInvalidCommand("Expected numbers for row and column");
         }
     }
 

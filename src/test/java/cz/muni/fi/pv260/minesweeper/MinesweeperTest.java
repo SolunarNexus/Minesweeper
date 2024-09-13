@@ -53,6 +53,7 @@ class MinesweeperTest {
 
 
         verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).printf("Remaining unflagged mines: %d\n", 0);
         verify(out, times(2)).print(">>> ");
         verify(out).println("You have called exit - defeat");
         verifyNoMoreInteractions(out, err);
@@ -71,6 +72,48 @@ class MinesweeperTest {
         minesweeper.runGame();
 
         assertThat(minesweeper.isBoardInitialized).isTrue();
+    }
+
+    @Test
+    void testFlagCommandNotInitialized(){
+        String input = """
+                flag 1 2
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.reveal(1, 2)).thenReturn(true);
+        when(board.isInBounds(1, 2)).thenReturn(true);
+
+        minesweeper.runGame();
+
+        assertThat(minesweeper.isBoardInitialized).isTrue();
+    }
+
+    @Test
+    void testFlagCommand(){
+        String input = """
+                flag 1 2
+                exit
+                """;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        when(board.flag(1, 2)).thenReturn(true);
+        when(board.isInBounds(1, 2)).thenReturn(true);
+        minesweeper.isBoardInitialized = true;
+
+        minesweeper.runGame();
+
+        verify(board).isInBounds(1, 2);
+        verify(board).flag(1, 2);
+        verify(board, times(2)).print(out);
+        verifyNoMoreInteractions(board);
+
+        verify(wrapper).exit(10);
+
+        verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).printf("Remaining unflagged mines: %d\n", 0);
+        verify(out, times(2)).print(">>> ");
+        verify(out).println("You have called exit - defeat");
+        verifyNoMoreInteractions(out, err);
     }
 
     @Test
@@ -95,6 +138,7 @@ class MinesweeperTest {
 
 
         verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).printf("Remaining unflagged mines: %d\n", 0);
         verify(out).print(">>> ");
         verify(out).printf("Found mine @ coordinates [%d, %d]\n", 1, 2);
         verify(out).println("\n*** You lost!***\n");
@@ -124,6 +168,7 @@ class MinesweeperTest {
 
 
         verify(out).println(Minesweeper.LOGO);
+        verify(out, times(2)).printf("Remaining unflagged mines: %d\n", 0);
         verify(out).print(">>> ");
         verify(out).println("You won!");
         verifyNoMoreInteractions(out, err);
@@ -138,6 +183,8 @@ class MinesweeperTest {
 
         verify(board).print(out);
         verify(out).println(Minesweeper.LOGO);
+        verify(out).printf("Remaining unflagged mines: %d\n", 0);
+        verify(out).printf("Remaining unflagged mines: %d\n", 0);
         verify(out).print(">>> ");
         verify(out).println("You have called exit - defeat");
         verifyNoMoreInteractions(board, out, err);
@@ -226,6 +273,7 @@ class MinesweeperTest {
         verify(board).print(out);
         verify(board).exportBoard();
         verify(out).println(Minesweeper.LOGO);
+        verify(out).printf("Remaining unflagged mines: %d\n", 0);
         verify(out, times(2)).print(">>> ");
         verify(out).println("EXPORT");
         verify(out).println("You have called exit - defeat");
@@ -248,6 +296,7 @@ class MinesweeperTest {
 
         verify(board).print(out);
         verify(out).println(Minesweeper.LOGO);
+        verify(out).printf("Remaining unflagged mines: %d\n", 0);
         verify(out, times(2)).print(">>> ");
         verify(out).println("Board is not initialized.");
         verify(out).println("You have called exit - defeat");
@@ -266,6 +315,7 @@ class MinesweeperTest {
 
         verify(board).print(out);
         verify(out).println(Minesweeper.LOGO);
+        verify(out).printf("Remaining unflagged mines: %d\n", 0);
         verify(out, times(2)).print(">>> ");
         verify(out).println("Debug output: \n");
         verify(out).println(board.toString());
@@ -289,6 +339,7 @@ class MinesweeperTest {
         verify(board).print(out);
         verify(board).isInBounds(1, 100);
         verify(out).println(Minesweeper.LOGO);
+        verify(out).printf("Remaining unflagged mines: %d\n", 0);
         verify(out, times(2)).print(">>> ");
         verify(out).println("Invalid command: Row or column out of bounds");
         verify(out).println(Minesweeper.USAGE);
@@ -315,6 +366,7 @@ class MinesweeperTest {
 
         verify(board).print(out);
         verify(out).println(Minesweeper.LOGO);
+        verify(out).printf("Remaining unflagged mines: %d\n", 0);
         verify(out, times(2)).print(">>> ");
         verify(out).println("Invalid command: " + messageExpected);
         verify(out).println(Minesweeper.USAGE);
